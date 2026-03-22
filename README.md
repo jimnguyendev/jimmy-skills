@@ -135,6 +135,12 @@ Skills marked with ⭐️ are recommended as a starting point for most Go projec
 
 **General purpose:**
 
+- ✅ Published
+- 👷 Work in progress
+- ❌ To-do
+- 🧠 Ultrathink automatically
+- ⚙️ Overridable (see doc below)
+
 |  | Skill | Name | Cmd | Ultrathink | Overridable | Error rate gap | Description (tok) | SKILL.md (tok) | Directory (tok) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ⭐️ | ✅ Code style | `golang-code-style` |  |  | ⚙️ | -40% | 31 | 2,070 | 2,686 |
