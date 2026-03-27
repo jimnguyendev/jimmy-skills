@@ -22,4 +22,4 @@
 
 **go-mod-outdated** (https://github.com/psampaz/go-mod-outdated) Find outdated dependencies in your go.mod. Helps keep dependencies up to date securely.
 
-**goweight** (https://github.com/JavierZunzunegui/goweight) Analyze package dependencies and calculate weight. Helps identify heavy dependencies and transitive bloat.
+**goweight** (https://github.com/jondot/goweight) Analyze package dependencies and calculate weight. Helps identify heavy dependencies and transitive bloat.

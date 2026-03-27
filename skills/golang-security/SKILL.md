@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.1"
+  version: "1.1.2"
   openclaw:
     emoji: "🔒"
     homepage: https://github.com/samber/cc-skills-golang
@@ -176,4 +176,4 @@ See `samber/cc-skills-golang@golang-database`, `samber/cc-skills-golang@golang-s
 - [Go Security Best Practices](https://go.dev/doc/security/best-practices)
 - [gosec Security Linter](https://github.com/securego/gosec)
 - [govulncheck](https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck)
-- [OWASP Go Project](https://owasp.org/www-project-go/)
+- [OWASP Go Secure Coding Practices](https://owasp.org/www-project-go-secure-coding-practices-guide/)

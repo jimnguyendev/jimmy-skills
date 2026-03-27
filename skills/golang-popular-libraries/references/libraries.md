@@ -42,7 +42,7 @@
 
 **Testify** (https://github.com/stretchr/testify) Sacred extension to testing package. Assertions, mocking, suite testing. Essential for Go testing.
 
-**gomock** (https://github.com/golang/mock) Mocking framework for Go interfaces. Official tool, integrates well with testing package.
+**gomock** (https://github.com/uber-go/mock) Mocking framework for Go interfaces. Widely used, integrates well with testing package.
 
 **go-sqlmock** (https://github.com/DATA-DOG/go-sqlmock) SQL mock driver for testing database operations. Test database code without real database.
 
@@ -116,7 +116,7 @@
 
 **Temporal Go SDK** (https://github.com/temporalio/sdk-go) Durable execution framework for building reliable async applications. Workflows, activities, and long-running processes.
 
-**DBOS** (https://github.com/dbos-labs/dbos-go) Backend framework for TypeScript/Go applications with durable execution, built on PostgreSQL.
+**DBOS** (https://github.com/dbos-inc/dbos-transact-golang) Backend framework for Go applications with durable execution, built on PostgreSQL.
 
 ## Types and Data Structures
 
@@ -176,7 +176,7 @@
 
 ## Dependency Injection
 
-**do** (https://github.com/samber/do/v2) Dependency injection library for Go. Simple, runtime DI with service locator pattern and health checks.
+**do** (https://github.com/samber/do) Dependency injection library for Go. Simple, runtime DI with service locator pattern and health checks.
 
 **Wire** (https://github.com/google/wire) Code-generated dependency injection for Go. Compile-time dependency injection without reflection.
 
