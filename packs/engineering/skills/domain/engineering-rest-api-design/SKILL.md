@@ -40,7 +40,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(git:*) Agent AskUserQuestion
 
 **Safety** means the method does not alter server state. **Idempotency** means sending the same request multiple times produces the same result.
 
-PATCH is _potentially_ idempotent: if it consistently sets a field to the same value, it is idempotent. If it increments a counter or appends to a list, it is not. Design PATCH operations to be idempotent whenever possible.
+PATCH is *potentially* idempotent: if it consistently sets a field to the same value, it is idempotent. If it increments a counter or appends to a list, it is not. Design PATCH operations to be idempotent whenever possible.
 
 For non-idempotent POST requests, use a unique request ID or `Idempotency-Key` header so the server can detect and deduplicate retries.
 
