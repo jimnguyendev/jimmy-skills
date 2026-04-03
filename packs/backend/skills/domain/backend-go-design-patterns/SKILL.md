@@ -1,6 +1,6 @@
 ---
 name: backend-go-design-patterns
-description: "Idiomatic Golang design patterns — functional options, constructors, error flow and cascading, resource management and lifecycle, graceful shutdown, resilience, architecture, dependency injection, data handling, and streaming. Apply when designing Go APIs, structuring applications, choosing between patterns, making design decisions, architectural choices, or production hardening."
+description: "Idiomatic Golang design patterns for real backend code: constructors, error flow, dependency injection, resource lifecycle, resilience, data handling, and package boundaries. Apply when designing Go APIs, structuring packages, choosing between patterns, making architecture decisions, or hardening production behavior. Default to simple, feature-first designs unless complexity has clearly appeared."
 user-invocable: false
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
@@ -21,32 +21,34 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 
 # Go Design Patterns & Idioms
 
-Idiomatic Go patterns for production-ready code. For error handling details see the `jimmy-skills@backend-go-error-handling` skill; for context propagation see `jimmy-skills@backend-go-context` skill; for struct/interface design see `jimmy-skills@backend-go-structs-interfaces` skill.
+Idiomatic Go patterns for production-ready backend code. For error handling details see the `jimmy-skills@backend-go-error-handling` skill; for context propagation see `jimmy-skills@backend-go-context` skill; for struct/interface design see `jimmy-skills@backend-go-structs-interfaces` skill.
 
 ## Best Practices Summary
 
-1. Constructors SHOULD use **functional options** — they scale better as APIs evolve (one function per option, no breaking changes)
-2. Functional options MUST **return an error** if validation can fail — catch bad config at construction, not at runtime
-3. **Avoid `init()`** — runs implicitly, cannot return errors, makes testing unpredictable. Use explicit constructors
-4. Enums SHOULD **start at 1** (or Unknown sentinel at 0) — Go's zero value silently passes as the first enum member
-5. Error cases MUST be **handled first** with early return — keep happy path flat
-6. **Panic is for bugs, not expected errors** — callers can handle returned errors; panics crash the process
-7. **`defer Close()` immediately after opening** — later code changes can accidentally skip cleanup
-8. **`runtime.AddCleanup`** over `runtime.SetFinalizer` — finalizers are unpredictable and can resurrect objects
-9. Every external call SHOULD **have a timeout** — a slow upstream hangs your goroutine indefinitely
-10. **Limit everything** (pool sizes, queue depths, buffers) — unbounded resources grow until they crash
-11. Retry logic MUST **check context cancellation** between attempts
-12. **Use `strings.Builder`** for concatenation in loops → see `jimmy-skills@backend-go-code-style`
-13. string vs []byte: **use `[]byte` for mutation and I/O**, `string` for display and keys — conversions allocate
-14. Iterators (Go 1.23+): **use for lazy evaluation** — avoid loading everything into memory
-15. **Stream large transfers** — loading millions of rows causes OOM; stream keeps memory constant
-16. `//go:embed` for **static assets** — embeds at compile time, eliminates runtime file I/O errors
-17. **Use `crypto/rand`** for keys/tokens — `math/rand` is predictable → see `jimmy-skills@backend-go-security`
-18. Regexp MUST be **compiled once at package level** — compilation is O(n) and allocates
-19. Compile-time interface checks: **`var _ Interface = (*Type)(nil)`**
-20. **A little recode > a big dependency** — each dep adds attack surface and maintenance burden
-21. **Design for testability** — accept interfaces, inject dependencies
-22. **Validate in two layers** — handler checks format/syntax (required fields, bounds, parse); service checks business rules (entity state, availability, cross-entity constraints). Each check lives in exactly one layer
+1. Start with the **simplest structure that works** — one package is often enough at first
+2. Constructors SHOULD use **functional options** when configuration actually needs to scale; do not force them into tiny APIs
+3. Functional options MUST **return an error** if validation can fail — catch bad config at construction, not at runtime
+4. **Avoid `init()`** — runs implicitly, cannot return errors, makes testing unpredictable. Use explicit constructors
+5. Enums SHOULD **start at 1** (or Unknown sentinel at 0) — Go's zero value silently passes as the first enum member
+6. Error cases MUST be **handled first** with early return — keep happy path flat
+7. **Panic is for bugs, not expected errors** — callers can handle returned errors; panics crash the process
+8. **`defer Close()` immediately after opening** — later code changes can accidentally skip cleanup
+9. **`runtime.AddCleanup`** over `runtime.SetFinalizer` — finalizers are unpredictable and can resurrect objects
+10. Every external call SHOULD **have a timeout** — a slow upstream hangs your goroutine indefinitely
+11. **Limit everything** (pool sizes, queue depths, buffers) — unbounded resources grow until they crash
+12. Retry logic MUST **check context cancellation** between attempts
+13. **Use `strings.Builder`** for concatenation in loops → see `jimmy-skills@backend-go-code-style`
+14. string vs []byte: **use `[]byte` for mutation and I/O**, `string` for display and keys — conversions allocate
+15. Iterators (Go 1.23+): **use for lazy evaluation** — avoid loading everything into memory
+16. **Stream large transfers** — loading millions of rows causes OOM; stream keeps memory constant
+17. `//go:embed` for **static assets** — embeds at compile time, eliminates runtime file I/O errors
+18. **Use `crypto/rand`** for keys/tokens — `math/rand` is predictable → see `jimmy-skills@backend-go-security`
+19. Regexp MUST be **compiled once at package level** — compilation is O(n) and allocates
+20. Compile-time interface checks: **`var _ Interface = (*Type)(nil)`**
+21. **A little recode > a big dependency** — each dep adds attack surface and maintenance burden
+22. **Design for testability** — accept interfaces, inject dependencies
+23. **Validate in two layers** — handler checks format/syntax (required fields, bounds, parse); service checks business rules (entity state, availability, cross-entity constraints). Each check lives in exactly one layer
+24. **Prefer feature-first package boundaries** — package splits should increase locality, not scatter one feature across technical layers
 
 ## Constructor Patterns: Functional Options vs Builder
 
@@ -95,7 +97,7 @@ srv := NewServer(":8080",
 )
 ```
 
-Constructors SHOULD use **functional options** — they scale better with API evolution and require less code. Use builder pattern only if you need complex validation between configuration steps.
+Constructors SHOULD use **functional options** when the API has multiple optional knobs or is expected to evolve. For a tiny type with one or two obvious parameters, a plain constructor is better. Use builder pattern only if you need complex validation between configuration steps.
 
 ## Constructors & Initialization
 
@@ -246,6 +248,8 @@ Core principles regardless of architecture:
 - **Respect 12-factor app** principles — → see `jimmy-skills@backend-go-project-layout`
 - **Feature-first layout** — group code by business capability, not by technical layer → see `jimmy-skills@backend-go-project-layout`
 - **No circular dependencies** — Go requires a DAG; use consumer-side interfaces and dependency injection to break cycles
+- **Merge packages when the boundary is fake** — do not preserve a bad split just to look architected
+- **Keep names local and boring** — avoid repeating package/type context in every symbol
 
 ## Detailed Guides
 

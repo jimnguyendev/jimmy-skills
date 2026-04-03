@@ -1,6 +1,6 @@
 ---
-name: backend-go-lint
-description: "Provides linting best practices and golangci-lint configuration for Go projects. Covers running linters, configuring .golangci.yml, suppressing warnings with nolint directives, interpreting lint output, and managing linter settings. Use this skill whenever the user runs linters, configures golangci-lint, asks about lint warnings or suppressions, sets up code quality tooling, or asks which linters to enable for a Go project. Also use when the user mentions golangci-lint, go vet, staticcheck, revive, or any Go linting tool."
+name: backend-go-linter
+description: "Provides linting best practices and golangci-lint configuration for Go projects. Covers running linters, configuring .golangci.yml, suppressing warnings with nolint directives, interpreting lint output, and managing linter settings. Use this skill whenever the user runs linters, configures golangci-lint, asks about lint warnings or suppressions, sets up code quality tooling, or asks which linters to enable for a Go project. Do not use this skill for package structure or architecture decisions; use `jimmy-skills@backend-core` or `jimmy-skills@backend-go-project-layout` for that."
 user-invocable: false
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
@@ -15,7 +15,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 **Modes:**
 
 - **Setup mode** — configuring `.golangci.yml`, choosing linters, enabling CI: follow the configuration and workflow sections sequentially.
-- **Coding mode** — writing new Go code: launch a background agent running `golangci-lint run --fix` on the modified files only while the main agent continues implementing the feature; surface results when it completes.
+- **Coding mode** — writing new Go code: run `golangci-lint run` on the changed surface after a meaningful code slice is complete. Use `--fix` only for mechanical issues you explicitly want auto-applied.
 - **Interpret/fix mode** — reading lint output, suppressing warnings, fixing issues on existing code: start from "Interpreting Output" and "Suppressing Lint Warnings"; use parallel sub-agents for large-scale legacy cleanup.
 
 # Go Linting
@@ -25,6 +25,8 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 `golangci-lint` is the standard Go linting tool. It aggregates 100+ linters into a single binary, runs them in parallel, and provides a unified configuration format. Run it frequently during development and always in CI.
 
 Every Go project MUST have a `.golangci.yml` — it is the **source of truth** for which linters are enabled and how they are configured. See the [recommended configuration](./assets/.golangci.yml) for a production-ready setup with 33 linters enabled.
+
+Linters are not the source of truth for package boundaries. Do not use lint output to justify splitting a feature across technical layers or introducing abstractions early. Package layout is a design concern, not a formatter concern.
 
 ## Quick Reference
 
@@ -78,7 +80,7 @@ For comprehensive patterns and examples, see **[nolint directives](./references/
 ## Development Workflow
 
 1. **Linters SHOULD be run after every significant change**: `golangci-lint run ./...`
-2. **Auto-fix what you can**: `golangci-lint run --fix ./...`
+2. **Auto-fix selectively**: use `golangci-lint run --fix ./...` only when you want mechanical rewrites applied
 3. **Format before committing**: `golangci-lint fmt ./...`
 4. **Incremental adoption on legacy code**: set `issues.new-from-rev` in `.golangci.yml` to only lint new/changed code, then gradually clean up old code
 
@@ -132,8 +134,16 @@ When adopting linting on a legacy codebase, use up to 5 parallel sub-agents (via
 - Sub-agent 4: Fix style and formatting (gofumpt, goimports, revive)
 - Sub-agent 5: Fix code quality (gocritic, unused, ineffassign)
 
+## Boundaries Linting Must Not Distort
+
+- Do not split one feature into multiple packages only to satisfy line-count or complexity thresholds
+- Prefer local refactoring inside the feature package before creating new cross-feature packages
+- If a cycle appears, fix the dependency direction or introduce a consumer-side interface; do not treat it as a linter suppression problem
+- Use linting to improve clarity inside an existing boundary, not to invent new boundaries mechanically
+
 ## Cross-References
 
 - → See `jimmy-skills@backend-go-continuous-integration` skill for CI pipeline with golangci-lint-action
 - → See `jimmy-skills@backend-go-code-style` skill for style rules that linters enforce
 - → See `jimmy-skills@backend-go-security` skill for SAST tools beyond linting (gosec, govulncheck)
+- → See `jimmy-skills@backend-go-project-layout` skill for feature-first package layout and import-cycle prevention

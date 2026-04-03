@@ -2,11 +2,15 @@
 
 ## Repo Purpose
 
-This repository maintains `jimmy-skills` as a stack-first skill kit:
+This repository maintains `jimmy-skills` as a stack-first skill kit.
 
-- `backend` for shared backend skills plus language/framework-specific backend skills
-- `frontend` for shared frontend skills plus framework-specific frontend skills
-- `engineering` for cross-stack workflow/process guidance
+The guiding backend philosophy is:
+
+- organize by business capability, not technical layers
+- start with fewer packages and split only when pain appears
+- keep names short and avoid repeating package/type context
+- keep types close to where they are used
+- keep dependencies one-way; use consumer-side interfaces to break cycles
 
 ## Structure
 
@@ -37,6 +41,7 @@ gemini-extension.json
 - Cross references must use `jimmy-skills@<skill-name>`.
 - Keep `SKILL.md` concise and push detailed material into `references/`.
 - If a skill documents a third-party library, include a short disclaimer that official docs remain authoritative.
+- Do not reintroduce generic layered API guidance as the default. Feature-first is the repo default unless a skill explicitly scopes an alternative.
 
 Required frontmatter:
 
@@ -55,7 +60,6 @@ Required frontmatter:
 - Use `backend-go-*` for Go implementation details.
 - Use `frontend-core` before framework-specific frontend skills.
 - Use `frontend-react` and `frontend-vue` for framework-specific frontend implementation.
-- Use `engineering-rest-api-design` for cross-stack API design, documentation, and review — before routing to backend or frontend implementation skills.
 
 ## Maintenance
 
@@ -68,4 +72,4 @@ When adding or renaming skills:
 
 ## Attribution
 
-The repo is adapted from `samber/cc-skills-golang`. Keep that acknowledgement in `README.md`, especially where Samber-specific backend library skills still remain.
+The repo is no longer structured as an upstream mirror. Keep upstream acknowledgement minimal and factual, only where reused material or library-specific references still remain.

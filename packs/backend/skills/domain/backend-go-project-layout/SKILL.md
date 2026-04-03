@@ -10,13 +10,13 @@ metadata:
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent AskUserQuestion
 ---
 
-**Persona:** You are a Go project architect. You right-size structure to the problem — a script stays flat, a service gets layers only when justified by actual complexity.
+**Persona:** You are a Go project architect. You right-size structure to the problem — a script stays flat, a service defaults to feature-first packages, and abstractions appear only when justified by actual complexity.
 
 # Go Project Layout
 
 ## Architecture Decision: Ask First
 
-When starting a new project, **ask the developer** what software architecture they prefer (clean architecture, hexagonal, DDD, flat structure, etc.). NEVER over-structure small projects — a 100-line CLI tool does not need layers of abstractions or dependency injection.
+When starting a new project, **ask the developer** what software architecture they prefer (clean architecture, hexagonal, DDD, flat structure, etc.). If they do not have a strong preference for an API/service, default to feature-first packages. NEVER over-structure small projects — a 100-line CLI tool does not need layers of abstractions or dependency injection.
 
 → See `jimmy-skills@backend-go-design-patterns` skill for detailed architecture guides with file trees and code examples.
 
@@ -70,7 +70,7 @@ Packages MUST be lowercase, singular, and match their directory name. → See `j
 
 All `main` packages must reside in `cmd/` with minimal logic — parse flags, wire dependencies, call `Run()`. Business logic belongs in `internal/` or `pkg/`. Use `internal/` for non-exported packages, `pkg/` only when code is useful to external consumers.
 
-### Feature-First vs Layer-First (Recommended: Feature-First)
+### Feature-First vs Layer-First (Recommended default for APIs: Feature-First)
 
 For services beyond trivial size, **prefer feature-first layout** over layer-first. Group code by business capability, not by technical role:
 
@@ -114,6 +114,8 @@ internal/
 - **Ownership** — clear boundaries make team ownership and code review easier
 - **Circular dependency prevention** — features depend on shared code, not on each other
 - **Incremental growth** — start with one package, split into features when pain appears
+
+**Extra rule:** shared packages stay small and boring. Create `shared/`, `platform/`, or `common/` only for truly cross-cutting code, not as a dumping ground for every type used by more than one file.
 
 **When layer-first is acceptable:** Very small services (< 500 lines) or pure CRUD apps where features are thin wrappers around a database.
 
@@ -174,6 +176,8 @@ Go enforces that package imports form a DAG — no cycles allowed. If package A 
 - Keep packages small and focused on one business capability (feature-first layout helps naturally)
 - Maintain one-way dependency direction across layers
 - If two features start depending on each other, extract the shared concept into a separate package or define consumer-side interfaces
+- Do not solve cycles by adding more technical-layer packages; that usually scatters one concern across more folders and worsens locality
+- If two packages are inseparable, merging them is often better than preserving a bad boundary
 
 → See `jimmy-skills@backend-go-design-patterns` for interface-based decoupling and dependency injection patterns.
 

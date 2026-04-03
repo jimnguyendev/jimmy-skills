@@ -1,6 +1,6 @@
 ---
 name: backend-go-code-style
-description: "Golang code style, formatting and conventions. Use when writing code, reviewing style, configuring linters, writing comments, or establishing project standards."
+description: "Golang code style and readability conventions that require human judgment. Use when reviewing clarity, naming noise, file organization, package boundaries, comments, or maintainability tradeoffs in Go code. Do not use this for golangci-lint setup or lint output interpretation; use `jimmy-skills@backend-go-linter` for tooling."
 user-invocable: false
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
@@ -14,7 +14,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 
 # Go Code Style
 
-Style rules that require human judgment — linters handle formatting, this skill handles clarity. For naming see `jimmy-skills@backend-go-naming` skill; for design patterns see `jimmy-skills@backend-go-design-patterns` skill; for struct/interface design see `jimmy-skills@backend-go-structs-interfaces` skill.
+Style rules that require human judgment. Linters handle mechanical enforcement; this skill handles clarity, locality, and readable package boundaries. For naming see `jimmy-skills@backend-go-naming` skill; for design patterns see `jimmy-skills@backend-go-design-patterns` skill; for struct/interface design see `jimmy-skills@backend-go-structs-interfaces` skill.
 
 > "Clear is better than clever." — Go Proverbs
 
@@ -102,21 +102,21 @@ When the `if` body ends with `return`/`break`/`continue`, the `else` MUST be dro
 
 ```go
 // Good — default-then-override with switch (cleanest for mutually exclusive overrides)
-level := slog.LevelInfo
+level := zap.InfoLevel
 switch {
 case debug:
-    level = slog.LevelDebug
+    level = zap.DebugLevel
 case verbose:
-    level = slog.LevelWarn
+    level = zap.WarnLevel
 }
 
 // Bad — else-if chain hides that there's a default
 if debug {
-    level = slog.LevelDebug
+    level = zap.DebugLevel
 } else if verbose {
-    level = slog.LevelWarn
+    level = zap.WarnLevel
 } else {
-    level = slog.LevelInfo
+    level = zap.InfoLevel
 }
 ```
 
@@ -192,6 +192,60 @@ Pass small types (`string`, `int`, `bool`, `time.Time`) by value. Use pointers w
 - **Dot imports** pollute the namespace and make it impossible to tell where a name comes from — never use in library code
 - **Unexport aggressively** — you can always export later; unexporting is a breaking change
 
+## Package Boundaries & Locality
+
+For APIs and services, prioritize **feature-first packages** over technical-layer packages. A business capability should mostly live in one package or one directory tree, not be split across `handlers/`, `services/`, `repository/`, and `models/` buckets.
+
+- Prefer `internal/users/`, `internal/invoices/`, `internal/posts/` over `internal/handlers/`, `internal/services/`, `internal/repository/`
+- Keep handler, service, repository, routes, and feature-local types near each other when they belong to one feature
+- Start with fewer packages than you think you need; split only when the package has multiple unrelated reasons to change
+- If changing one feature forces edits across many packages, the boundaries are probably wrong
+
+This is a readability concern, not just an architecture concern: locality is one of the fastest ways to reduce maintenance cost.
+
+## Naming Noise
+
+- File names SHOULD NOT repeat the package name unless needed for clarity
+- Type names SHOULD NOT repeat the package name
+- Method names SHOULD NOT repeat the receiver type name
+
+```go
+// Good
+package users
+
+type Service struct{}
+
+func (s *Service) Create(ctx context.Context, in CreateInput) error { ... }
+
+// Bad
+package users
+
+type UserService struct{}
+
+func (s *UserService) CreateUser(ctx context.Context, in UserCreateInput) error { ... }
+```
+
+Keep names short once package and type context already tell the story.
+
+## Keep Types Near Usage
+
+Do not create giant `models.go` buckets by default. Keep types close to the feature and use case they serve.
+
+- Request/response DTOs stay near the handler or transport boundary that owns them
+- Persistence-only structs stay near the repository that uses them
+- Domain types shared by multiple files in the same feature can stay in `types.go`
+- Extract a shared package only when the type is truly shared across multiple features
+
+## Avoid Circular Dependencies
+
+Package imports must stay one-way. If two packages start depending on each other:
+
+1. Move behavior to the package that truly owns the concern
+2. Merge the packages if they are really one concept
+3. Define a small interface at the consumer side and inject the concrete implementation from wiring code
+
+Do not let `users` import `billing` while `billing` imports `users`. That is almost always a sign that the package split is wrong.
+
 ## String Handling
 
 Use `strconv` for simple conversions (faster), `fmt.Sprintf` for complex formatting. Use `%q` in error messages to make string boundaries visible. Use `strings.Builder` for loops, `+` for simple concatenation.
@@ -226,3 +280,4 @@ Many rules are enforced automatically: `gofmt`, `gofumpt`, `goimports`, `gocriti
 - → See the `jimmy-skills@backend-go-structs-interfaces` skill for pointer vs value receivers, interface design
 - → See the `jimmy-skills@backend-go-design-patterns` skill for functional options, builders, constructors
 - → See the `jimmy-skills@backend-go-linter` skill for automated formatting enforcement
+- → See the `jimmy-skills@backend-go-project-layout` skill for feature-first package trees and circular dependency prevention
