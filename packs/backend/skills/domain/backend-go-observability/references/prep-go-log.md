@@ -25,6 +25,7 @@ type Logger interface {
 ```
 
 **Why a local copy?** The project depends on an interface it owns, not on prep-go-log's type directly. This means:
+
 - Swapping logger backends requires changes **only** in `cmd/*/main.go`
 - All internal packages import `your-project/pkg/log`, never `prep-go-log/pkg/log`
 - `prepzap.NewLogger()` satisfies the local interface because the method signatures match
@@ -178,6 +179,7 @@ logger.Info(ctx, "quest build completed",
 ```
 
 **Field naming conventions:**
+
 - Use `snake_case` for field keys: `"user_id"`, `"line_id"`, `"quest_count"`
 - Always include `"err", err` when logging errors
 - Do NOT interpolate values into the message string — use structured fields instead
@@ -271,6 +273,7 @@ Mode affects log format (JSON in production, text in local) and is attached as a
 ## OpenTelemetry Integration
 
 prep-go-log automatically bridges with OpenTelemetry:
+
 - **Zap backend:** Uses `otelzap.NewCore()` to send logs to the OTel LoggerProvider
 - **Logrus backend:** Uses `otellogrus.NewHook()` to add OTel hook
 
