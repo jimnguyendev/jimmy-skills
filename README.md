@@ -57,7 +57,51 @@ Frontend:
 
 Engineering:
 
-- reserved for shared process and delivery conventions across stacks
+- `engineering-rest-api-design` for cross-stack REST API design conventions, documentation templates, and review checklists
+- shared process and delivery conventions across stacks
+
+## Design Philosophy
+
+### Shared-first routing
+
+Skills are never accessed in isolation. The system enforces a routing pattern where architectural concerns are resolved before implementation details:
+
+- Architectural/operational problem → `backend-core` → then `backend-go-*`
+- UI architecture problem → `frontend-core` → then `frontend-react` or `frontend-vue`
+
+This forces the AI agent to reason at the right level of abstraction before writing code.
+
+### Knowledge graph over document silos
+
+Every skill cross-references related skills via `jimmy-skills@<skill-name>` convention. For example `backend-go-database` references `backend-go-security` for SQL injection concerns, and `backend-go-concurrency` references `backend-go-context` for cancellation patterns. The result is a navigable knowledge graph rather than disconnected documents.
+
+### Progressive disclosure
+
+Each `SKILL.md` stays concise. Detailed material lives in `references/` subdirectories — the agent reads them only when needed, preserving context window budget. For example `backend-go-security` has 11 reference files covering threat modeling, injection, cryptography, cookies, secrets, and more.
+
+### Multi-mode operation
+
+Skills define distinct behavioral modes (Write, Review, Audit, Debug) so the same domain knowledge adapts to different tasks. Audit mode typically spawns 3-5 parallel sub-agents to scan large codebases efficiently.
+
+### Persona-anchored responses
+
+Each skill assigns a specific engineering persona ("Senior Go security engineer", "Go concurrency engineer — every goroutine is a liability until proven necessary"). This anchors the AI to a clear technical stance instead of generic answers.
+
+### Selective deep thinking
+
+Critical domains (security audits, performance optimization) activate `ultrathink` mode — the system knows where shallow analysis is dangerous and forces deeper reasoning.
+
+## Strengths
+
+| Strength | Detail |
+|---|---|
+| Cross-IDE portable | Same skill set runs on Claude Code, Cursor, and Gemini via separate plugin descriptors |
+| Tool whitelisting | Each skill declares `allowed-tools`, controlling which tools the AI may use |
+| Eval-driven quality | `evals.json` files provide concrete test cases (50+ for security alone) to measure skill effectiveness |
+| Production-ready assets | Ships with real templates: `.golangci.yml` (33+ linters), Makefile, CI configs |
+| Parallel audit scaling | Audit mode distributes work across sub-agents for large codebase analysis |
+| Manifest-driven structure | All routing and organization lives in JSON manifests, enabling automated validation and tooling |
+| Extensible by design | The empty `engineering` pack and the shared-then-specific routing pattern allow growth without architectural changes |
 
 ## Conventions
 
@@ -69,7 +113,7 @@ Engineering:
 
 ## Key Files
 
-- [kit.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/kit.manifest.json)
-- [packs/backend/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/backend/pack.manifest.json)
-- [packs/frontend/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/frontend/pack.manifest.json)
-- [packs/engineering/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/engineering/pack.manifest.json)
+- [kit.manifest.json](kit.manifest.json)
+- [packs/backend/pack.manifest.json](packs/backend/pack.manifest.json)
+- [packs/frontend/pack.manifest.json](packs/frontend/pack.manifest.json)
+- [packs/engineering/pack.manifest.json](packs/engineering/pack.manifest.json)

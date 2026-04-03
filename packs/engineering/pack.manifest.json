@@ -5,7 +5,12 @@
   "capabilities": {
     "toolAdapters": [],
     "skills": {
-      "domain": [],
+      "domain": [
+        {
+          "id": "engineering-rest-api-design",
+          "path": "packs/engineering/skills/domain/engineering-rest-api-design/SKILL.md"
+        }
+      ],
       "process": []
     }
   },

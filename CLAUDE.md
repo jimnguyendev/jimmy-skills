@@ -55,6 +55,7 @@ Required frontmatter:
 - Use `backend-go-*` for Go implementation details.
 - Use `frontend-core` before framework-specific frontend skills.
 - Use `frontend-react` and `frontend-vue` for framework-specific frontend implementation.
+- Use `engineering-rest-api-design` for cross-stack API design, documentation, and review — before routing to backend or frontend implementation skills.
 
 ## Maintenance
 
