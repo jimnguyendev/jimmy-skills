@@ -1,26 +1,21 @@
 {
-    "name": "cc-skills-golang",
-    "description": "AI Agent Skills for production-ready Go projects",
-    "version": "1.2.4",
-    "author": {
-        "name": "Samuel Berthe",
-        "email": "hey@samuel-berthe.fr"
-    },
-    "homepage": "https://github.com/samber/cc-skills-golang",
-    "repository": "https://github.com/samber/cc-skills-golang",
-    "license": "MIT",
-    "keywords": [
-        "claude-code",
-        "claude-code-plugin",
-        "plugin",
-        "go",
-        "golang",
-        "ai-agent",
-        "skills",
-        "agentic",
-        "engineering",
-        "developer",
-        "coding",
-        "productivity"
-    ]
+  "name": "jimmy-skills",
+  "description": "Engineering skill pack for production-ready Go and backend projects",
+  "version": "1.0.0",
+  "author": {
+    "name": "Jim Nguyen",
+    "email": "jimnguyendev@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+  "repository": "https://github.com/jimnguyendev/jimmy-skills",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "go",
+    "golang",
+    "backend",
+    "skills",
+    "engineering"
+  ]
 }

@@ -2,22 +2,35 @@ name: Lint
 
 on:
   push:
-    branches: [main]
-    paths: ['skills/**', 'CLAUDE.md', 'README.md', 'EVALUATIONS.md']
+    branches: [master]
+    paths:
+      - "packs/**"
+      - "README.md"
+      - "CLAUDE.md"
+      - "kit.manifest.json"
+      - ".github/**"
+      - ".claude-plugin/plugin.json"
+      - ".cursor-plugin/plugin.json"
+      - "gemini-extension.json"
   pull_request:
-    paths: ['skills/**', 'CLAUDE.md', 'README.md', 'EVALUATIONS.md']
+    paths:
+      - "packs/**"
+      - "README.md"
+      - "CLAUDE.md"
+      - "kit.manifest.json"
+      - ".github/**"
+      - ".claude-plugin/plugin.json"
+      - ".cursor-plugin/plugin.json"
+      - "gemini-extension.json"
   workflow_dispatch: {}
 
 jobs:
-  lint:
-    if: github.event_name != 'schedule' || github.repository_owner == 'samber'
+  markdown:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
-      # Markdown linting
       - name: markdownlint-cli2-action
-        uses: DavidAnson/markdownlint-cli2-action@main
+        uses: DavidAnson/markdownlint-cli2-action@v20
         with:
-          config: '.markdownlint-cli2.jsonc'
-          globs: '**/*.md'
+          config: ".markdownlint-cli2.jsonc"
+          globs: "**/*.md"

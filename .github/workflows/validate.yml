@@ -1,35 +1,63 @@
-# Disabled: skills-ref does not yet support the `user-invocable` frontmatter field,
-# which causes all validations to fail. Re-enable once resolved.
-# See https://github.com/agentskills/agentskills/issues/105
-#
-# name: Validate skills
-#
-# on:
-#   push:
-#     branches: [main]
-#     paths: ['skills/**']
-#   pull_request:
-#     paths: ['skills/**']
-#   workflow_dispatch: {}
-#
-# jobs:
-#   validate:
-#     if: github.event_name != 'schedule' || github.repository_owner == 'samber'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v6
-#
-#       - name: Install skills-ref
-#         run: npm install -g skills-ref
-#
-#       - name: Validate all skills
-#         run: |
-#           exit_code=0
-#           for skill in skills/*/; do
-#             echo "::group::Validating ${skill}"
-#             if ! skills-ref validate "./${skill}"; then
-#               exit_code=1
-#             fi
-#             echo "::endgroup::"
-#           done
-#           exit $exit_code
+name: Validate Pack
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packs/**"
+      - "kit.manifest.json"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "packs/**"
+      - "kit.manifest.json"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate manifests
+        run: |
+          python3 -m json.tool kit.manifest.json >/dev/null
+          python3 -m json.tool packs/engineering/pack.manifest.json >/dev/null
+
+      - name: Validate pack paths
+        run: |
+          test -f packs/engineering/pack-quickstart.md
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path(".")
+          kit = json.loads((root / "kit.manifest.json").read_text())
+          pack = json.loads((root / "packs/engineering/pack.manifest.json").read_text())
+
+          for entry in kit["packs"]:
+              path = root / entry["path"]
+              assert path.is_file(), f"missing pack manifest: {path}"
+
+          for entry in pack["capabilities"]["skills"]["domain"]:
+              path = root / entry["path"]
+              assert path.is_file(), f"missing skill file: {path}"
+          PY
+
+      - name: Validate skill frontmatter conventions
+        run: |
+          find packs/engineering/skills/domain -name SKILL.md | sort | while read -r file; do
+            grep -q '^name:' "$file"
+            grep -q '^description:' "$file"
+            grep -q '^metadata:$' "$file"
+            grep -q '^  author: jimnguyendev$' "$file"
+            grep -q '^  version:' "$file"
+            grep -q '^allowed-tools:' "$file"
+          done
+
+      - name: Validate old publisher metadata is gone
+        run: |
+          ! grep -RInE 'openclaw|OpenClaw|Openclaw|ClawHub|clawhub' \
+            README.md CLAUDE.md .claude-plugin .cursor-plugin gemini-extension.json \
+            packs/engineering/skills/domain
