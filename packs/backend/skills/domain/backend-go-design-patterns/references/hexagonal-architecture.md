@@ -4,6 +4,8 @@
 
 Apply hexagonal architecture when a service interacts with multiple external systems (databases, APIs, message queues, caches) and you want the domain logic fully decoupled from all of them. Particularly effective when the same business logic needs multiple entry points (HTTP, gRPC, CLI, message consumer). Do NOT use for simple CRUD apps or libraries.
 
+Hexagonal architecture is an escalation path, not the default. Preserve feature-first locality even when introducing ports and adapters.
+
 ## Core Concepts
 
 - **Domain** — Business logic and types. No external dependencies.
@@ -16,6 +18,8 @@ Apply hexagonal architecture when a service interacts with multiple external sys
 
 ## Project Structure
 
+Prefer a vertical slice per feature, with ports and adapters living inside that slice where practical.
+
 ```
 order-service/
 ├── cmd/
@@ -24,27 +28,17 @@ order-service/
 │   └── worker/
 │       └── main.go                  # Message consumer wiring
 ├── internal/
-│   ├── domain/
-│   │   ├── order.go                 # Order entity + business rules
-│   │   ├── item.go                  # OrderItem
-│   │   └── status.go               # OrderStatus enum
-│   ├── port/
-│   │   ├── incoming.go             # Primary ports (OrderService interface)
-│   │   └── outgoing.go             # Secondary ports (OrderRepository, PaymentGateway)
-│   ├── service/
-│   │   └── order_service.go        # Implements primary ports — orchestrates domain + secondary ports
-│   └── adapter/
-│       ├── primary/
-│       │   ├── http/
-│       │   │   ├── router.go
-│       │   │   └── order_handler.go # HTTP adapter — calls OrderService
-│       │   └── grpc/
-│       │       └── order_server.go  # gRPC adapter — calls OrderService
-│       └── secondary/
-│           ├── postgres/
-│           │   └── order_repo.go    # Implements OrderRepository
-│           └── stripe/
-│               └── payment.go      # Implements PaymentGateway
+│   ├── order/
+│   │   ├── domain.go               # Order entity + business rules
+│   │   ├── incoming.go             # Primary ports
+│   │   ├── outgoing.go             # Secondary ports
+│   │   ├── service.go              # Implements primary ports
+│   │   ├── http_handler.go         # HTTP adapter
+│   │   ├── grpc_server.go          # gRPC adapter
+│   │   ├── postgres_repo.go        # Secondary adapter
+│   │   └── stripe_payment.go       # Secondary adapter
+│   └── platform/
+│       └── router.go
 ├── go.mod
 └── go.sum
 ```
@@ -188,6 +182,8 @@ func (r *OrderRepo) FindByID(ctx context.Context, id string) (*domain.Order, err
 ## Multiple Entry Points
 
 The hexagonal approach shines when the same `OrderService` is called from different primary adapters — HTTP for external clients, gRPC for internal services, a message consumer for async events. Each adapter is wired in its own `cmd/` entry point.
+
+If you only have one entry point and one datastore, this pattern may be unnecessary. Do not create ports/adapters just to look “clean”.
 
 ## Wiring
 

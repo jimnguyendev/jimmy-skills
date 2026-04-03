@@ -4,6 +4,8 @@
 
 Apply DDD when the business domain is complex enough that the code structure should mirror the business model — typically services with 5K+ lines, multiple bounded contexts, or rich business rules. Do NOT use for simple CRUD apps or CLI tools.
 
+DDD is for genuine domain complexity. It should not replace simple feature-first structure in ordinary APIs.
+
 ## Building Blocks
 
 | Concept | Go Mapping | Purpose |
@@ -58,6 +60,7 @@ order-service/
 - Use `adapters/` instead of `infrastructure/` to be explicit about Hexagonal Architecture
 - Make cross-context boundaries explicit (see **Bounded Contexts** section below)
 - Place shared infrastructure (event bus, logging) at `internal/{shared}/` or `internal/events/`
+- Keep shared packages small; if a concept is mostly used by one bounded context, keep it there
 
 ## Code Examples
 
@@ -176,6 +179,8 @@ func (h *PlaceOrderHandler) Handle(ctx context.Context, cmd PlaceOrderCommand) e
 ## Bounded Contexts
 
 Each bounded context maps to a top-level package under `internal/` with its own domain, application, and adapters. Contexts communicate through domain events or explicit anti-corruption layers — never by importing each other's internal types directly.
+
+If two contexts constantly need each other's internals, the split is probably wrong. Revisit the boundary before adding more abstraction.
 
 **Anti-corruption layer example:** If `billing/` needs to consume an `order.OrderPlaced` event, translate it to a billing-specific type:
 

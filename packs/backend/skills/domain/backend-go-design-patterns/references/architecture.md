@@ -7,10 +7,12 @@ Architecture complexity MUST match project scope — don't over-architect small 
 | Project Size | Recommended Approach |
 | --- | --- |
 | Script / small CLI (<500 lines) | Flat `main.go` + a few files, no layers |
-| Medium service (500-5K lines) | Simple layered: `handler/`, `service/`, `repository/` |
-| Large service / monolith (5K+ lines) | Clean architecture, hexagonal, or DDD — ask the team |
+| Medium service (500-5K lines) | Feature-first packages, minimal abstractions, split only when pain appears |
+| Large service / monolith (5K+ lines) | Feature-first bounded areas, then optionally clean architecture, hexagonal, or DDD where complexity justifies it |
 
 A 100-line CLI does not need a domain layer, ports and adapters, or dependency injection frameworks. Start simple and refactor when complexity demands it.
+
+For APIs, the default is still locality by business capability. Architectural patterns are overlays for specific complexity, not the starting folder tree.
 
 ## Keep Domain Pure
 
@@ -35,7 +37,7 @@ func (o *Order) AddItem(item Item) error {
 }
 ```
 
-Infrastructure concerns (database queries, HTTP clients, message queues) live in separate packages that depend on the domain — never the reverse.
+Infrastructure concerns (database queries, HTTP clients, message queues) live in separate packages that depend on the domain — never the reverse. Keep these boundaries inside a feature area when possible; avoid scattering one feature across multiple top-level technical folders.
 
 ## Two-Layer Validation
 
@@ -256,6 +258,8 @@ type Product struct { ... }
 type Stock struct { ... }
 func (p *Product) IsAvailable() bool { ... }
 ```
+
+Merging is often better than preserving a fake boundary that creates two-way knowledge and poor locality.
 
 ### Solution 3: Dependency Injection via Interfaces
 

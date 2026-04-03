@@ -4,6 +4,8 @@
 
 Apply clean architecture when you need strong separation between business logic and infrastructure — typically medium-to-large services (2K+ lines) where testability, framework independence, and clear dependency direction matter. Do NOT use for small CLI tools or scripts.
 
+Clean architecture is not the default folder tree for every API. Start feature-first first; introduce this structure only when the domain and infrastructure boundaries are actually causing pain.
+
 ## The Dependency Rule
 
 Dependencies point inward only. Inner layers never import outer layers.
@@ -17,28 +19,23 @@ Each layer defines interfaces for what it needs. Outer layers implement those in
 
 ## Project Structure
 
+Keep feature locality even when using clean architecture. Prefer a vertical slice per capability over one global `handler/`, `repository/`, `usecase/` tree.
+
 ```
 order-service/
 ├── cmd/
 │   └── server/
 │       └── main.go                  # Wiring only — builds the dependency graph
 ├── internal/
-│   ├── entity/
-│   │   ├── order.go                 # Order entity + business rules
-│   │   ├── item.go                  # OrderItem
-│   │   └── status.go                # OrderStatus enum
 │   ├── order/
+│   │   ├── entity.go                # Order entity + business rules
+│   │   ├── port.go                  # Interfaces this use case depends on
 │   │   ├── place.go                 # PlaceOrderUseCase
 │   │   ├── cancel.go                # CancelOrderUseCase
-│   │   └── port.go                  # Interfaces this use case depends on
-│   ├── adapter/
-│   │   ├── handler/
-│   │   │   └── order_handler.go    # HTTP handler — calls use cases
-│   │   ├── repository/
-│   │   │   └── order_postgres.go   # OrderRepository — implements port
-│   │   └── gateway/
-│   │       └── payment_client.go   # External payment API client
-│   └── infrastructure/
+│   │   ├── http_handler.go          # HTTP handler — calls use cases
+│   │   ├── postgres_repo.go         # OrderRepository — implements port
+│   │   └── payment_client.go        # External payment API client
+│   └── platform/
 │       ├── router.go               # HTTP router setup
 │       ├── database.go             # DB connection
 │       └── config.go               # Config loading
@@ -171,6 +168,8 @@ func (h *OrderHandler) HandlePlaceOrder(w http.ResponseWriter, r *http.Request) 
 ## Key Principle
 
 Interfaces live where they are consumed, not where they are implemented. The `usecase/order/port.go` file defines `OrderRepository` — the adapter in `adapter/repository/` implements it. This keeps the use case layer free from infrastructure imports.
+
+The more important rule is still locality: clean architecture should not force one order-related change to jump through five unrelated top-level directories.
 
 ## Wiring
 
