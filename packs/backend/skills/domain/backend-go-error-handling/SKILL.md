@@ -1,6 +1,6 @@
 ---
 name: backend-go-error-handling
-description: "Idiomatic Golang error handling — creation, wrapping with %w, errors.Is/As, errors.Join, custom error types, sentinel errors, panic/recover, the single handling rule, structured logging with zap, and HTTP request logging middleware. Built to make logs usable at scale with log aggregation 3rd-party tools. Apply when creating, wrapping, inspecting, or logging errors in Go code."
+description: "Idiomatic Golang error handling — creation, wrapping with %w, errors.Is/As, errors.Join, custom error types, sentinel errors, panic/recover, the single handling rule, structured logging with prep-go-log, and HTTP request logging middleware. Built to make logs usable at scale with log aggregation 3rd-party tools. Apply when creating, wrapping, inspecting, or logging errors in Go code."
 user-invocable: false
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
@@ -24,7 +24,7 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 
 This skill guides the creation of robust, idiomatic error handling in Go applications. Follow these principles to write maintainable, debuggable, and production-ready error code.
 
-This skill assumes the project's structured logger is `zap`. If the team later replaces it with an internal logger built on top of `zap`, follow the same field-oriented patterns and log shape.
+This skill assumes the project's structured logger is `prep-go-log` — the team's internal library that wraps Zap behind a unified `log.Logger` interface with OpenTelemetry + Signoz integration. All logging calls use `logger.Error(ctx, "message", "key", value)` syntax. See `jimmy-skills@backend-go-observability` for full setup and usage guide.
 
 ## Best Practices Summary
 
@@ -39,12 +39,12 @@ This skill assumes the project's structured logger is `zap`. If the team later r
 9. **Use sentinel errors** for expected conditions (including "not found"), custom types for carrying data
 10. **Translate low-level errors to domain terms** at layer boundaries — map `sql.ErrNoRows` to `ErrUserNotFound`, but never hide real failures behind domain errors
 11. **NEVER use `panic` for expected error conditions** — not found is not a bug, a timeout is not a bug. Reserve panic for programmer mistakes
-12. **SHOULD use `zap`** for structured error logging — not `fmt.Println` or `log.Printf`
+12. **MUST use `prep-go-log`** for structured error logging — not `fmt.Println`, `log.Printf`, or raw `zap`
 13. **Attach operational context as structured fields** — request IDs, tenant IDs, and user IDs belong in logs, spans, or custom error types, not in ad-hoc string concatenation
 14. **Log HTTP requests** with structured middleware capturing method, path, status, and duration
 15. **Use log levels** to indicate error severity
 16. **Never expose technical errors to users** — translate internal errors to user-friendly messages, log technical details separately
-17. **Keep error messages low-cardinality** — don't interpolate variable data (IDs, paths, line numbers) into error strings; attach them as structured fields instead (via `zap` at the log site, spans, or custom error types) so APM/log aggregators (Datadog, Loki, Sentry) can group errors properly
+17. **Keep error messages low-cardinality** — don't interpolate variable data (IDs, paths, line numbers) into error strings; attach them as structured fields instead (via `prep-go-log` at the log site, spans, or custom error types) so APM/log aggregators (Signoz, Datadog, Loki, Sentry) can group errors properly
 
 ## Detailed Reference
 
@@ -52,7 +52,7 @@ This skill assumes the project's structured logger is `zap`. If the team later r
 
 - **[Error Wrapping and Inspection](./references/error-wrapping.md)** — Why `fmt.Errorf("{context}: %w", err)` beats `fmt.Errorf("{context}: %v", err)` (chains vs concatenation). How to inspect chains with `errors.Is`/`errors.As` for type-safe error handling, and `errors.Join` for combining independent errors.
 
-- **[Error Handling Patterns and Logging](./references/error-handling.md)** — Error translation across layers (mapping `sql.ErrNoRows` to domain sentinels without hiding real failures), the single handling rule, panic/recover design, structured context at the logging boundary, and `zap` integration for APM tools.
+- **[Error Handling Patterns and Logging](./references/error-handling.md)** — Error translation across layers (mapping `sql.ErrNoRows` to domain sentinels without hiding real failures), the single handling rule, panic/recover design, structured context at the logging boundary, and `prep-go-log` integration for APM tools.
 
 ## Parallelizing Error Handling Audits
 
@@ -62,7 +62,7 @@ When auditing error handling across a large codebase, use up to 5 parallel sub-a
 - Sub-agent 2: Error wrapping — audit `%w` vs `%v`, verify `errors.Is`/`errors.As` patterns
 - Sub-agent 3: Single handling rule — find log-and-return violations, swallowed errors, discarded errors (`_`)
 - Sub-agent 4: Panic/recover — audit `panic` usage, verify recovery at goroutine boundaries
-- Sub-agent 5: Structured logging — verify `zap` usage at error sites, check for PII in error messages
+- Sub-agent 5: Structured logging — verify `prep-go-log` usage at error sites, check for PII in error messages
 
 ## Cross-References
 
@@ -72,5 +72,5 @@ When auditing error handling across a large codebase, use up to 5 parallel sub-a
 
 ## References
 
-- [zap package](https://pkg.go.dev/go.uber.org/zap)
-- [zapcore package](https://pkg.go.dev/go.uber.org/zap/zapcore)
+- prep-go-log — team's internal logging library (wraps Zap + OTel + Signoz) → See `jimmy-skills@backend-go-observability` for full reference
+- [zap package](https://pkg.go.dev/go.uber.org/zap) — underlying logger used by prep-go-log

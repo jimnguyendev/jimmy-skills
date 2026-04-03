@@ -159,13 +159,13 @@ APM and log aggregation tools (Datadog, Loki, Sentry) group errors by message. W
 // ✗ Bad — high cardinality: each file/line combo creates a unique error message
 fmt.Errorf("error in %s at line %d of the csv", csvPath, line)
 
-// ✓ Good (stdlib) — static error, structured attributes at the log site
+// ✓ Good — static error, structured attributes at the log site
 err := errors.New("csv parsing error")
 // ... later, at the logging boundary:
-logger.Error("csv parsing failed",
-    zap.Error(err),
-    zap.String("csv_file_path", csvPath),
-    zap.Int("csv_file_line", line),
+h.logger.Error(ctx, "csv parsing failed",
+    "err", err,
+    "csv_file_path", csvPath,
+    "csv_file_line", line,
 )
 ```
 

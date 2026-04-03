@@ -37,34 +37,136 @@ func (o *Order) AddItem(item Item) error {
 
 Infrastructure concerns (database queries, HTTP clients, message queues) live in separate packages that depend on the domain — never the reverse.
 
-## Fail Fast — Validate at Boundaries
+## Two-Layer Validation
 
-Input MUST be validated at system boundaries (HTTP handlers, CLI argument parsing, message consumers). Once data enters your domain layer, trust it:
+Validation splits into two distinct layers, each with a clear responsibility. Do NOT mix them — and do NOT duplicate the same check in both layers.
+
+### Layer 1: Syntactic Validation (Handler)
+
+The handler validates that the request **can be processed** — correct format, required fields present, values within basic bounds. This catches malformed input before it reaches business logic.
+
+**Responsibility:** Can I read this? Is the shape correct? Are required fields present?
 
 ```go
-// Handler layer — validate here
-func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-    var req CreateOrderRequest
+// internal/booking/handler.go — syntactic checks only
+func (h *Handler) BookHomestay(w http.ResponseWriter, r *http.Request) {
+    var req BookingRequest
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        http.Error(w, "invalid JSON", http.StatusBadRequest)
+        respondError(w, http.StatusBadRequest, "invalid JSON")
         return
     }
-    if req.UserID == "" {
-        http.Error(w, "user_id is required", http.StatusBadRequest)
+    if req.HomestayID == "" {
+        respondError(w, http.StatusBadRequest, "homestay_id is required")
         return
     }
-    if len(req.Items) == 0 {
-        http.Error(w, "at least one item required", http.StatusBadRequest)
+    if req.CheckinDate.IsZero() || req.CheckoutDate.IsZero() {
+        respondError(w, http.StatusBadRequest, "checkin_date and checkout_date are required")
+        return
+    }
+    if req.Guests <= 0 {
+        respondError(w, http.StatusBadRequest, "guests must be positive")
         return
     }
 
-    // Domain layer trusts this data is valid
-    order, err := h.service.CreateOrder(r.Context(), req.UserID, req.Items)
+    // All params structurally valid — hand off to service
+    booking, err := h.service.Book(r.Context(), req)
+    if errors.Is(err, ErrHomestayNotFound) {
+        respondError(w, http.StatusNotFound, "homestay not found")
+        return
+    }
+    if errors.Is(err, ErrHomestayNotActive) {
+        respondError(w, http.StatusNotFound, "homestay not active")
+        return
+    }
+    if errors.Is(err, ErrHomestayBusy) {
+        respondError(w, http.StatusConflict, "homestay not available for selected dates")
+        return
+    }
+    if err != nil {
+        logger.Error("book homestay failed", zap.Error(err))
+        respondError(w, http.StatusInternalServerError, "internal error")
+        return
+    }
+    respondJSON(w, http.StatusCreated, booking)
+}
+```
+
+### Layer 2: Semantic Validation (Service)
+
+The service validates **business rules** that require domain knowledge, entity state, or database queries. These checks cannot be done with format validation alone.
+
+**Responsibility:** Is this operation allowed by business rules? Does the entity exist and is it in the right state?
+
+```go
+// internal/booking/service.go — business rule checks
+func (s *Service) Book(ctx context.Context, req BookingRequest) (*Booking, error) {
+    // Rule: check-in cannot be in the past
+    if req.CheckinDate.Before(time.Now().Truncate(24 * time.Hour)) {
+        return nil, ErrCheckinDateInvalid
+    }
+    // Rule: cannot book more than 365 nights ahead
+    nights := int(req.CheckoutDate.Sub(req.CheckinDate).Hours() / 24)
+    if nights > 365 {
+        return nil, ErrNightsExceeded
+    }
+
+    // Rule: homestay must exist and be active
+    homestay, err := s.homestayRepo.GetByID(ctx, req.HomestayID)
+    if err != nil {
+        return nil, err // includes ErrHomestayNotFound
+    }
+    if !homestay.IsActive {
+        return nil, ErrHomestayNotActive
+    }
+    if homestay.MaxGuests < req.Guests {
+        return nil, ErrGuestsExceeded
+    }
+
+    // Rule: all dates must be available (with pessimistic lock)
+    available, err := s.availRepo.FindAndLockAvailable(ctx, req.HomestayID, req.CheckinDate, req.CheckoutDate)
+    if err != nil {
+        return nil, fmt.Errorf("checking availability: %w", err)
+    }
+    if len(available) < nights {
+        return nil, ErrHomestayBusy
+    }
+
+    // All rules passed — proceed with booking
     // ...
 }
 ```
 
-Don't re-validate the same data at every layer — it clutters the code and violates DRY.
+### What Goes Where — Decision Table
+
+| Check | Layer | Why |
+| --- | --- | --- |
+| JSON parseable, required fields present | Handler | Reject malformed requests before touching business logic |
+| Field format (email regex, date format, string length) | Handler | Pure format — no domain knowledge needed |
+| Numeric bounds (guests > 0, price >= 0) | Handler | Basic sanity — no DB query needed |
+| Date logic (check-in not in past, not too far ahead) | Service | Business rule — "too far ahead" is a domain policy |
+| Entity exists and is in correct state | Service | Requires DB query |
+| Cross-entity constraints (availability, capacity) | Service | Requires querying multiple records |
+| Uniqueness (duplicate booking) | Service/Repository | Requires DB query or unique constraint |
+
+### Anti-patterns to Avoid
+
+**Do NOT duplicate the same check in both layers.** If the handler already validated `guests > 0`, the service should not check it again. Each check lives in exactly one place.
+
+```go
+// ❌ Bad — redundant check
+// handler.go
+if req.Guests <= 0 { return error }
+// service.go
+if req.Guests <= 0 { return error }  // never fires — handler already caught it
+
+// ✅ Good — each layer owns its checks, no overlap
+// handler.go: guests > 0 (format)
+// service.go: guests <= homestay.MaxGuests (business rule)
+```
+
+**Do NOT put DB-dependent checks in the handler.** The handler should not import or query repositories — it delegates to the service.
+
+**Do NOT put format checks in the service.** If the service is checking whether a string is empty or a number is positive, that check belongs in the handler.
 
 ## Make Illegal States Unrepresentable
 

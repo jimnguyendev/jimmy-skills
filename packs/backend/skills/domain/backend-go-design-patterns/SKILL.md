@@ -46,6 +46,7 @@ Idiomatic Go patterns for production-ready code. For error handling details see 
 19. Compile-time interface checks: **`var _ Interface = (*Type)(nil)`**
 20. **A little recode > a big dependency** — each dep adds attack surface and maintenance burden
 21. **Design for testability** — accept interfaces, inject dependencies
+22. **Validate in two layers** — handler checks format/syntax (required fields, bounds, parse); service checks business rules (entity state, availability, cross-entity constraints). Each check lives in exactly one layer
 
 ## Constructor Patterns: Functional Options vs Builder
 
@@ -240,7 +241,7 @@ Ask the developer which architecture they prefer: clean architecture, hexagonal,
 Core principles regardless of architecture:
 
 - **Keep domain pure** — no framework dependencies in the domain layer
-- **Fail fast** — validate at boundaries, trust internal code
+- **Two-layer validation** — syntactic checks (format, required fields) in the handler; semantic checks (business rules, entity state, DB queries) in the service. Each check lives in exactly one layer — no duplication
 - **Make illegal states unrepresentable** — use types to enforce invariants
 - **Respect 12-factor app** principles — → see `jimmy-skills@backend-go-project-layout`
 - **Feature-first layout** — group code by business capability, not by technical layer → see `jimmy-skills@backend-go-project-layout`
@@ -250,7 +251,7 @@ Core principles regardless of architecture:
 
 | Guide | Scope |
 | --- | --- |
-| [Architecture Patterns](references/architecture.md) | High-level principles, circular dependency resolution, when each architecture fits |
+| [Architecture Patterns](references/architecture.md) | Two-layer validation, circular dependency resolution, high-level principles |
 | [Clean Architecture](references/clean-architecture.md) | Use cases, dependency rule, layered adapters |
 | [Hexagonal Architecture](references/hexagonal-architecture.md) | Ports and adapters, domain core isolation |
 | [Domain-Driven Design](references/ddd.md) | Aggregates, value objects, bounded contexts |

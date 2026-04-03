@@ -25,12 +25,12 @@ func processOrder(id string) error {
 }
 
 // ✓ Good — handle at the top level (HTTP handler, main, etc.)
-func handleOrder(w http.ResponseWriter, r *http.Request) {
-    err := processOrder(r.FormValue("id"))
+func (h *Handler) handleOrder(w http.ResponseWriter, r *http.Request) {
+    err := h.service.processOrder(r.Context(), r.FormValue("id"))
     if err != nil {
-        logger.Error("order failed",
-            zap.Error(err),
-            zap.String("order_id", r.FormValue("id")),
+        h.logger.Error(r.Context(), "order failed",
+            "err", err,
+            "order_id", r.FormValue("id"),
         )
         http.Error(w, "internal error", http.StatusInternalServerError)
         return
@@ -78,7 +78,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
         return
     }
     if err != nil {
-        logger.Error("get user failed", zap.Error(err))
+        h.logger.Error(r.Context(), "get user failed", "err", err)
         http.Error(w, "internal error", http.StatusInternalServerError)
         return
     }
@@ -120,13 +120,13 @@ func GetUser(id string) *User {
 Use `recover` in deferred functions at goroutine boundaries (HTTP handlers, worker goroutines) to prevent one panic from crashing the entire process.
 
 ```go
-func safeHandler(next http.Handler) http.Handler {
+func (h *Handler) safeHandler(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         defer func() {
-            if r := recover(); r != nil {
-                logger.Error("panic recovered",
-                    zap.Any("panic", r),
-                    zap.ByteString("stack", debug.Stack()),
+            if rv := recover(); rv != nil {
+                h.logger.Error(r.Context(), "panic recovered",
+                    "panic", rv,
+                    "stack", string(debug.Stack()),
                 )
                 http.Error(w, "internal error", http.StatusInternalServerError)
             }
@@ -162,19 +162,19 @@ func createOrder(ctx context.Context, orderID string) error {
 }
 ```
 
-At the boundary, extract the structured fields once and log them with `zap`:
+At the boundary, extract the structured fields once and log them with `prep-go-log`:
 
 ```go
 if err := createOrder(ctx, orderID); err != nil {
     var orderErr *OrderError
     if errors.As(err, &orderErr) {
-        logger.Error("create order failed", zap.Error(err), zap.String("order_id", orderErr.OrderID))
+        h.logger.Error(ctx, "create order failed", "err", err, "order_id", orderErr.OrderID)
     } else {
-        logger.Error("create order failed", zap.Error(err))
+        h.logger.Error(ctx, "create order failed", "err", err)
     }
 }
 ```
 
-## Logging Errors with `zap`
+## Logging Errors with `prep-go-log`
 
-→ See `jimmy-skills@backend-go-observability` skill for comprehensive structured logging guidance, including logger setup, log levels, log handlers, HTTP middleware, and cost considerations.
+→ See `jimmy-skills@backend-go-observability` skill for comprehensive structured logging guidance, including `prep-go-log` setup, dependency injection, chain log ID middleware, and Signoz integration.

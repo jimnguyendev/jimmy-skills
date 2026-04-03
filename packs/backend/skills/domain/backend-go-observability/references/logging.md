@@ -1,4 +1,6 @@
-# Structured Logging with `slog`
+# Structured Logging Fundamentals
+
+> **Team standard:** Use `prep-go-log` for all Go services. See [prep-go-log reference](./prep-go-log.md) for initialization, dependency injection, and usage patterns. This document covers the universal principles that apply regardless of logging library.
 
 → See `jimmy-skills@backend-go-error-handling` skill for the single handling rule.
 
@@ -11,36 +13,28 @@ Structured logs emit key-value pairs instead of freeform strings. Log management
 log.Printf("ERROR: failed to create user %s: %v", userID, err)
 
 // ✓ Good — structured key-value pairs, machine-parseable
-slog.Error("user creation failed",
+logger.Error(ctx, "user creation failed",
     "user_id", userID,
-    "error", err,
+    "err", err,
 )
-// JSON output: {"time":"2025-01-15T10:30:00Z","level":"ERROR","msg":"user creation failed","user_id":"u-123","error":"connection refused"}
+// JSON output: {"time":"2025-01-15T10:30:00Z","level":"ERROR","msg":"user creation failed","user_id":"u-123","err":"connection refused","chain_id":"req-abc-123"}
 ```
 
-## Handler Setup
+## Logger Setup
 
-```go
-// Production MUST use JSON — because plain-text multiline logs (eg. stack traces) would be split into separate records by log collectors
-logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-    Level: slog.LevelInfo,
-}))
+With `prep-go-log`, the handler setup is handled by the library. See [prep-go-log reference](./prep-go-log.md) for initialization.
 
-// Development — human-readable text
-logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-    Level: slog.LevelDebug,
-}))
-
-slog.SetDefault(logger)
-```
+- **Production:** `prepzap.NewLogger(ctx, attr.Production, svcName, signozExporter, prepzap.WithAsync())` — JSON output, async batch processing, OTel export to Signoz
+- **Development:** `prepzap.NewLogger(ctx, attr.Local, svcName, signozExporter)` — human-readable output
+- **Testing:** `&console.Logger{Env: "test"}` — simple stdout, no dependencies
 
 ## Log Levels
 
 ```go
-slog.Debug("cache lookup", "key", cacheKey, "hit", false)
-slog.Info("order created", "order_id", orderID, "total", amount)
-slog.Warn("rate limit approaching", "current_usage", 0.92, "limit", 1000)
-slog.Error("payment failed", "order_id", orderID, "error", err)
+logger.Debug(ctx, "cache lookup", "key", cacheKey, "hit", false)
+logger.Info(ctx, "order created", "order_id", orderID, "total", amount)
+logger.Warn(ctx, "rate limit approaching", "current_usage", 0.92, "limit", 1000)
+logger.Error(ctx, "payment failed", "order_id", orderID, "err", err)
 ```
 
 **Rule of thumb**: if you're unsure between Warn and Error, ask "did the operation succeed?" If yes (even with degradation), use Warn. If no, use Error.
@@ -51,91 +45,74 @@ Logging is not free. Each log line costs CPU (serialization), I/O (disk/network)
 
 - **Debug level in production** can generate millions of log lines per minute in a busy service, overwhelming your log pipeline and inflating costs by 10-100x
 - **Info level** is the typical production default — it provides enough visibility without excessive volume
-- Debug level SHOULD be disabled in production — use `slog.LevelInfo` in production and `slog.LevelDebug` only in development or when actively debugging a specific issue
+- Debug level SHOULD be disabled in production — use Info level in production and Debug only in development or when actively debugging a specific issue
 - For high-throughput services, consider lowering verbosity or adding sampling in your log pipeline so verbose logs do not overwhelm ingestion and storage
 
 ## Logging with Context
 
-MUST use the `*Context` variants to correlate logs with the current trace. When an OpenTelemetry bridge is configured, trace_id and span_id are automatically injected into log records.
+Every `prep-go-log` method requires `ctx` as the first argument. This propagates chain log ID and trace context automatically — no manual `*Context` variant needed.
 
 ```go
-// ✗ Bad — no trace correlation
-slog.Error("query failed", "error", err)
+// ✗ Bad — context.Background() loses chain log ID and trace context
+logger.Error(context.Background(), "query failed", "err", err)
 
-// ✓ Good — trace_id/span_id attached automatically when OTel bridge is active
-slog.ErrorContext(ctx, "query failed", "error", err)
+// ✓ Good — request context carries chain_id, trace_id, span_id
+logger.Error(ctx, "query failed", "err", err)
 ```
 
-## Adding Request-Scoped Attributes
+## Request-Scoped Attributes via Chain Log ID
 
-Use `slog.With()` to create a child logger that includes attributes on every log line. Middleware can inject request-scoped fields so all downstream logs carry the same context.
+`prep-go-log` uses chain log ID middleware instead of child loggers. The middleware injects a unique ID into context at the request boundary, and every log call automatically includes it:
 
 ```go
-func LoggingMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        logger := slog.With(
-            "request_id", r.Header.Get("X-Request-ID"),
-            "method", r.Method,
-            "path", r.URL.Path,
-        )
-        // Store enriched logger in context for downstream use
-        ctx := WithLogger(r.Context(), logger)
-        next.ServeHTTP(w, r.WithContext(ctx))
-    })
-}
+// HTTP: middleware injects chain_id
+c.SetContextValue(attr.ChainLogIdKey, id)
+
+// gRPC: interceptor injects chain_id
+ctxWithVal := context.WithValue(ctx, attr.ChainLogIdKey, chainID)
+
+// All downstream log calls automatically include chain_id
+logger.Info(ctx, "order processed", "order_id", orderID)
+// Output: {"chain_id":"req-abc-123", "msg":"order processed", "order_id":"o-456"}
 ```
 
-## Log Sinks and the `slog` Ecosystem
+→ See [prep-go-log reference](./prep-go-log.md) for full middleware setup (HTTP, gRPC, Kafka).
 
-`slog` supports pluggable handlers. Start simple:
+## Migrating to prep-go-log
 
-- `slog.JSONHandler` — JSON to stdout/stderr for production
-- `slog.TextHandler` — human-readable key=value logs for development
-- [lmittmann/tint](https://github.com/lmittmann/tint) — colorized terminal output for local use
+If a service currently uses Zap, Logrus, zerolog, or slog directly, migrate to `prep-go-log`. It provides unified OTel integration, Signoz export, and chain log ID propagation out of the box.
 
-Prefer shipping JSON logs to stdout and let your platform collector (Datadog Agent, Fluent Bit, Vector, OpenTelemetry Collector, CloudWatch agent) route them to the final backend. This keeps application code and log transport concerns separate.
+**Step 1:** Add `prep-go-log` and initialize in `cmd/*/main.go`
 
-For additional handlers and middleware, use the ecosystem catalog at [go.dev/wiki/Resources-for-slog](https://go.dev/wiki/Resources-for-slog) and choose libraries that match your framework and deployment constraints.
-
-## Migrating from zap / logrus / zerolog
-
-`log/slog` is the standard library logger since Go 1.21. If the project uses `zap`, `logrus`, or `zerolog`, migrate to `slog` — it has a stable API, broad ecosystem support, and eliminates an unnecessary dependency.
-
-**Step 1: Stabilize output** — configure `slog` to emit the same field names and JSON shape you need in production so old and new call sites can coexist temporarily without breaking dashboards or parsers.
-
-**Step 2: Replace call sites** — change all logger calls to `slog`:
+**Step 2:** Replace all direct logger calls with the `log.Logger` interface:
 
 ```go
-// zap → slog
+// zap → prep-go-log
 // Before: zap.L().Info("order created", zap.String("order_id", id))
 // After:
-slog.Info("order created", "order_id", id)
+logger.Info(ctx, "order created", "order_id", id)
 
-// logrus → slog
+// logrus → prep-go-log
 // Before: logrus.WithField("order_id", id).Info("order created")
 // After:
-slog.Info("order created", "order_id", id)
+logger.Info(ctx, "order created", "order_id", id)
 
-// zerolog → slog
-// Before: log.Info().Str("order_id", id).Msg("order created")
+// slog → prep-go-log
+// Before: slog.InfoContext(ctx, "order created", "order_id", id)
 // After:
-slog.Info("order created", "order_id", id)
+logger.Info(ctx, "order created", "order_id", id)
 ```
 
-**Step 3: Remove the bridge** — once all call sites are migrated, replace the bridge handler with a native `slog` handler and remove the old logger dependency:
+**Step 3:** Add chain log ID middleware and remove the old logger dependency.
 
-```go
-slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-    Level: slog.LevelInfo,
-})))
-```
+→ See [prep-go-log reference](./prep-go-log.md) for full initialization and DI patterns.
 
 ## Common Logging Mistakes
 
 ```go
 // ✗ Bad — errors MUST be either logged OR returned, NEVER both (single handling rule violation)
 if err != nil {
-    slog.Error("query failed", "error", err)
+    s.logger.Error(ctx, "query failed", "err", err)
     return fmt.Errorf("query: %w", err) // error gets logged twice up the chain
 }
 
@@ -145,8 +122,8 @@ if err != nil {
 }
 
 // ✗ Bad — NEVER log PII (emails, SSNs, passwords, tokens)
-slog.Info("user logged in", "email", user.Email, "ssn", user.SSN)
+logger.Info(ctx, "user logged in", "email", user.Email, "ssn", user.SSN)
 
 // ✓ Good — log identifiers, not sensitive data
-slog.Info("user logged in", "user_id", user.ID)
+logger.Info(ctx, "user logged in", "user_id", user.ID)
 ```
