@@ -1,68 +1,75 @@
 # jimmy-skills
 
-`jimmy-skills` is a manifest-first engineering skill pack for Go and backend-heavy work. The repository is reorganized to follow the pack/domain layout used in PrepKit, with all active skills living under `packs/engineering/skills/domain/`.
+`jimmy-skills` is a manifest-first multi-pack skill kit organized by stack instead of by one language bucket.
 
-This repo is adapted from and still explicitly references selected material from [`samber/cc-skills-golang`](https://github.com/samber/cc-skills-golang). A few remaining domain skills intentionally target Samber-maintained libraries, for example `golang-samber-hot`.
+This repo is adapted from and still explicitly references selected material from [`samber/cc-skills-golang`](https://github.com/samber/cc-skills-golang). Some backend skills still intentionally point at Samber-maintained libraries, for example `backend-go-samber-hot`.
 
-## Layout
+## Pack Layout
 
 ```text
 kit.manifest.json
 packs/
+  backend/
+    pack.manifest.json
+    pack-quickstart.md
+    skills/domain/
+      backend-core/
+      backend-go-*/
+  frontend/
+    pack.manifest.json
+    pack-quickstart.md
+    skills/domain/
+      frontend-core/
+      frontend-react/
+      frontend-vue/
   engineering/
     pack.manifest.json
     pack-quickstart.md
-    skills/
-      domain/
-        <skill-name>/
-          SKILL.md
-          references/
-          evals/
-          assets/
-.claude-plugin/
-.cursor-plugin/
-gemini-extension.json
 ```
 
-## Install
-
-Use the repository directly:
+## Installation
 
 ```bash
 npx skills add https://github.com/jimnguyendev/jimmy-skills --all
 ```
 
-Or clone it into your local skill discovery path:
+Or clone locally:
 
 ```bash
 git clone https://github.com/jimnguyendev/jimmy-skills.git ~/.agents/skills/jimmy-skills
 ```
 
-Codex, Claude Code, Cursor, and other Agent Skills-compatible tools can load the pack from there. Cursor metadata points to `./packs/engineering/skills/domain/`.
+Cursor metadata currently points at the backend domain directory because that is the mature implementation pack in this repo today.
 
-## Engineering Pack
+## Packs
 
-The `engineering` pack currently ships 28 Go-focused domain skills covering:
+Backend:
 
-- testing, troubleshooting, observability, performance, and benchmarking
-- database, gRPC, CLI, dependency management, and CI
-- code style, naming, safety, error handling, and modernization
-- project layout, documentation, design patterns, and data structures
-- library-specific guidance where it is still useful for this workflow
+- `backend-core` for shared backend concerns such as API contracts, schema changes, async workflows, rollout, and service boundaries
+- `backend-go-*` for Go-specific implementation skills
+- currently 29 backend skills: 1 shared backend skill and 28 Go-specialized skills
 
-Quick start commands and pack metadata live in:
+Frontend:
 
-- [kit.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/kit.manifest.json)
-- [packs/engineering/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/engineering/pack.manifest.json)
-- [packs/engineering/pack-quickstart.md](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/engineering/pack-quickstart.md)
+- `frontend-core` for shared UI architecture and browser-facing concerns
+- `frontend-react` and `frontend-vue` as framework entry points
+- currently a starter pack intended to grow as you add framework-specific depth
+
+Engineering:
+
+- reserved for shared process and delivery conventions across stacks
 
 ## Conventions
 
-- Cross-skill references should use `jimmy-skills@<skill-name>`.
-- New or updated skills belong under `packs/engineering/skills/domain/<skill-name>/`.
-- Legacy publisher metadata and distribution automation are intentionally removed from this fork.
-- Logging guidance is being standardized around `zap`.
+- Cross-skill references use `jimmy-skills@<skill-name>`.
+- Backend language skills live under `packs/backend/skills/domain/`.
+- Frontend framework skills live under `packs/frontend/skills/domain/`.
+- Shared stack-agnostic workflow guidance belongs in `packs/engineering/`.
+- Legacy publisher metadata and automation remain removed from this fork.
 
-## Attribution
+## Key Files
 
-This repository is a curated fork for Jim Nguyen's workflow. It removes the previous distribution and publisher metadata, but it still acknowledges the upstream source and Samber ecosystem references where they remain relevant to the skill content.
+- [kit.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/kit.manifest.json)
+- [packs/backend/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/backend/pack.manifest.json)
+- [packs/frontend/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/frontend/pack.manifest.json)
+- [packs/engineering/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/engineering/pack.manifest.json)

@@ -2,23 +2,28 @@
 
 ## Repo Purpose
 
-This repository maintains `jimmy-skills`, a manifest-first engineering skill pack for Go/backend work. The repository layout follows the PrepKit pack/domain pattern instead of the older flat `skills/` layout.
+This repository maintains `jimmy-skills` as a stack-first skill kit:
+
+- `backend` for shared backend skills plus language/framework-specific backend skills
+- `frontend` for shared frontend skills plus framework-specific frontend skills
+- `engineering` for cross-stack workflow/process guidance
 
 ## Structure
 
 ```text
 kit.manifest.json
 packs/
+  backend/
+    pack.manifest.json
+    pack-quickstart.md
+    skills/domain/<skill-name>/SKILL.md
+  frontend/
+    pack.manifest.json
+    pack-quickstart.md
+    skills/domain/<skill-name>/SKILL.md
   engineering/
     pack.manifest.json
     pack-quickstart.md
-    skills/
-      domain/
-        <skill-name>/
-          SKILL.md
-          references/
-          evals/
-          assets/
 .claude-plugin/plugin.json
 .cursor-plugin/plugin.json
 gemini-extension.json
@@ -27,9 +32,13 @@ gemini-extension.json
 
 ## Skill Rules
 
-Every skill lives at `packs/engineering/skills/domain/<skill-name>/SKILL.md`.
+- Every skill lives under `packs/<pack>/skills/domain/<skill-name>/SKILL.md`.
+- `metadata.author` must be `jimnguyendev`.
+- Cross references must use `jimmy-skills@<skill-name>`.
+- Keep `SKILL.md` concise and push detailed material into `references/`.
+- If a skill documents a third-party library, include a short disclaimer that official docs remain authoritative.
 
-Required frontmatter fields:
+Required frontmatter:
 
 - `name`
 - `description`
@@ -40,37 +49,22 @@ Required frontmatter fields:
 - `metadata.version`
 - `allowed-tools`
 
-Repo conventions:
+## Routing Conventions
 
-- `metadata.author` must be `jimnguyendev`.
-- Do not add legacy publisher metadata fields.
-- Cross references must use `jimmy-skills@<skill-name>`.
-- Keep `SKILL.md` concise and push detail into `references/`.
-- If a skill covers a third-party library, include a short disclaimer pointing to official docs.
-- Keep evaluations colocated under `evals/`.
+- Use `backend-core` before language-specific backend skills when the problem is architectural or operational.
+- Use `backend-go-*` for Go implementation details.
+- Use `frontend-core` before framework-specific frontend skills.
+- Use `frontend-react` and `frontend-vue` for framework-specific frontend implementation.
 
-## Pack Maintenance
+## Maintenance
 
-When adding, removing, or renaming a skill:
+When adding or renaming skills:
 
-1. Update `packs/engineering/pack.manifest.json`.
-2. Update `README.md` if the public pack description changes.
-3. Update plugin manifests if directory paths change.
-4. Re-run repo checks or adjust `.github/workflows/validate.yml` if validation rules need to change.
-
-## Naming
-
-- Repository name: `jimmy-skills`
-- Pack id: `engineering`
-- Skill namespace: `jimmy-skills@<skill-name>`
-- GitHub remote: `git@github.com:jimnguyendev/jimmy-skills.git`
-
-## Git / Release
-
-- Do not reintroduce publisher-specific automation tied to the old upstream repository.
-- Keep workflows generic and repository-owned.
-- Do not auto-bump versions unless explicitly requested.
+1. Update the corresponding `packs/<pack>/pack.manifest.json`.
+2. Update `kit.manifest.json` if packs change.
+3. Update `README.md` if public routing or pack descriptions change.
+4. Re-run the repo validation checks.
 
 ## Attribution
 
-The repo is adapted from `samber/cc-skills-golang`. Keep the acknowledgement in `README.md`, especially for any surviving Samber-library skills such as `golang-samber-hot`.
+The repo is adapted from `samber/cc-skills-golang`. Keep that acknowledgement in `README.md`, especially where Samber-specific backend library skills still remain.

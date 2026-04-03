@@ -1,0 +1,132 @@
+{
+  "name": "backend",
+  "version": "1.1.0",
+  "description": "Backend pack with shared backend skills plus Go-specialized implementation skills.",
+  "capabilities": {
+    "toolAdapters": [],
+    "skills": {
+      "domain": [
+        {
+          "id": "backend-core",
+          "path": "packs/backend/skills/domain/backend-core/SKILL.md"
+        },
+        {
+          "id": "backend-go-benchmark",
+          "path": "packs/backend/skills/domain/backend-go-benchmark/SKILL.md"
+        },
+        {
+          "id": "backend-go-cli",
+          "path": "packs/backend/skills/domain/backend-go-cli/SKILL.md"
+        },
+        {
+          "id": "backend-go-code-style",
+          "path": "packs/backend/skills/domain/backend-go-code-style/SKILL.md"
+        },
+        {
+          "id": "backend-go-concurrency",
+          "path": "packs/backend/skills/domain/backend-go-concurrency/SKILL.md"
+        },
+        {
+          "id": "backend-go-context",
+          "path": "packs/backend/skills/domain/backend-go-context/SKILL.md"
+        },
+        {
+          "id": "backend-go-continuous-integration",
+          "path": "packs/backend/skills/domain/backend-go-continuous-integration/SKILL.md"
+        },
+        {
+          "id": "backend-go-data-structures",
+          "path": "packs/backend/skills/domain/backend-go-data-structures/SKILL.md"
+        },
+        {
+          "id": "backend-go-database",
+          "path": "packs/backend/skills/domain/backend-go-database/SKILL.md"
+        },
+        {
+          "id": "backend-go-dependency-management",
+          "path": "packs/backend/skills/domain/backend-go-dependency-management/SKILL.md"
+        },
+        {
+          "id": "backend-go-design-patterns",
+          "path": "packs/backend/skills/domain/backend-go-design-patterns/SKILL.md"
+        },
+        {
+          "id": "backend-go-documentation",
+          "path": "packs/backend/skills/domain/backend-go-documentation/SKILL.md"
+        },
+        {
+          "id": "backend-go-error-handling",
+          "path": "packs/backend/skills/domain/backend-go-error-handling/SKILL.md"
+        },
+        {
+          "id": "backend-go-grpc",
+          "path": "packs/backend/skills/domain/backend-go-grpc/SKILL.md"
+        },
+        {
+          "id": "backend-go-linter",
+          "path": "packs/backend/skills/domain/backend-go-linter/SKILL.md"
+        },
+        {
+          "id": "backend-go-modernize",
+          "path": "packs/backend/skills/domain/backend-go-modernize/SKILL.md"
+        },
+        {
+          "id": "backend-go-naming",
+          "path": "packs/backend/skills/domain/backend-go-naming/SKILL.md"
+        },
+        {
+          "id": "backend-go-observability",
+          "path": "packs/backend/skills/domain/backend-go-observability/SKILL.md"
+        },
+        {
+          "id": "backend-go-performance",
+          "path": "packs/backend/skills/domain/backend-go-performance/SKILL.md"
+        },
+        {
+          "id": "backend-go-popular-libraries",
+          "path": "packs/backend/skills/domain/backend-go-popular-libraries/SKILL.md"
+        },
+        {
+          "id": "backend-go-project-layout",
+          "path": "packs/backend/skills/domain/backend-go-project-layout/SKILL.md"
+        },
+        {
+          "id": "backend-go-safety",
+          "path": "packs/backend/skills/domain/backend-go-safety/SKILL.md"
+        },
+        {
+          "id": "backend-go-samber-hot",
+          "path": "packs/backend/skills/domain/backend-go-samber-hot/SKILL.md"
+        },
+        {
+          "id": "backend-go-security",
+          "path": "packs/backend/skills/domain/backend-go-security/SKILL.md"
+        },
+        {
+          "id": "backend-go-stay-updated",
+          "path": "packs/backend/skills/domain/backend-go-stay-updated/SKILL.md"
+        },
+        {
+          "id": "backend-go-stretchr-testify",
+          "path": "packs/backend/skills/domain/backend-go-stretchr-testify/SKILL.md"
+        },
+        {
+          "id": "backend-go-structs-interfaces",
+          "path": "packs/backend/skills/domain/backend-go-structs-interfaces/SKILL.md"
+        },
+        {
+          "id": "backend-go-testing",
+          "path": "packs/backend/skills/domain/backend-go-testing/SKILL.md"
+        },
+        {
+          "id": "backend-go-troubleshooting",
+          "path": "packs/backend/skills/domain/backend-go-troubleshooting/SKILL.md"
+        }
+      ],
+      "process": []
+    }
+  },
+  "agents": [],
+  "commands": [],
+  "workflows": []
+}

@@ -23,31 +23,35 @@ jobs:
       - name: Validate manifests
         run: |
           python3 -m json.tool kit.manifest.json >/dev/null
-          python3 -m json.tool packs/engineering/pack.manifest.json >/dev/null
+          find packs -name pack.manifest.json -print | sort | while read -r file; do
+            python3 -m json.tool "$file" >/dev/null
+          done
 
       - name: Validate pack paths
         run: |
-          test -f packs/engineering/pack-quickstart.md
           python3 - <<'PY'
           import json
           from pathlib import Path
 
           root = Path(".")
           kit = json.loads((root / "kit.manifest.json").read_text())
-          pack = json.loads((root / "packs/engineering/pack.manifest.json").read_text())
 
           for entry in kit["packs"]:
               path = root / entry["path"]
               assert path.is_file(), f"missing pack manifest: {path}"
+              pack = json.loads(path.read_text())
+              quickstart = path.with_name("pack-quickstart.md")
+              assert quickstart.is_file(), f"missing pack quickstart: {quickstart}"
 
-          for entry in pack["capabilities"]["skills"]["domain"]:
-              path = root / entry["path"]
-              assert path.is_file(), f"missing skill file: {path}"
+              for section in ("domain", "process"):
+                  for skill in pack["capabilities"]["skills"].get(section, []):
+                      skill_path = root / skill["path"]
+                      assert skill_path.is_file(), f"missing skill file: {skill_path}"
           PY
 
       - name: Validate skill frontmatter conventions
         run: |
-          find packs/engineering/skills/domain -name SKILL.md | sort | while read -r file; do
+          find packs -path '*/skills/domain/*/SKILL.md' | sort | while read -r file; do
             grep -q '^name:' "$file"
             grep -q '^description:' "$file"
             grep -q '^metadata:$' "$file"
@@ -60,4 +64,4 @@ jobs:
         run: |
           ! grep -RInE 'openclaw|OpenClaw|Openclaw|ClawHub|clawhub' \
             README.md CLAUDE.md .claude-plugin .cursor-plugin gemini-extension.json \
-            packs/engineering/skills/domain
+            packs

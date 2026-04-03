@@ -1,6 +1,5 @@
 ## Engineering Pack
 
-- Clone or install `jimmy-skills`, then load the `engineering` pack.
-- Active skills live in `packs/engineering/skills/domain/`.
-- Use `jimmy-skills@<skill-name>` when referring to another skill in instructions or overrides.
-- Keep vendor-specific skills explicit. `golang-samber-hot` remains because it documents the `github.com/samber/hot` library.
+- Use this pack for shared delivery and review conventions that are not tied to backend or frontend frameworks.
+- Backend implementation skills now live in `packs/backend/skills/domain/`.
+- Frontend implementation skills now live in `packs/frontend/skills/domain/`.

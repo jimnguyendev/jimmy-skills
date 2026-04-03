@@ -13,37 +13,37 @@
 
 | Skill                           | Version | Assertions | With Skill | Without Skill | Delta     | Uplift    | Concern                     |
 | ------------------------------- | ------- | ---------- | ---------- | ------------- | --------- | --------- | --------------------------- |
-| `golang-naming`                 | v1.0.0  | 51         | 94%        | **71%**       | +24pp     | 1.32×     | **Low delta, high without** |
-| `golang-error-handling`         | v1.0.0  | 60         | 98%        | **72%**       | +27pp     | 1.36×     | **Low delta, high without** |
-| `golang-popular-libraries`      | v1.0.0  | 54         | 100%       | **70%**       | +30pp     | 1.43×     | **Low delta, high without** |
-| `golang-security`               | v1.0.0  | 110        | 100%       | **68%**       | +32pp     | 1.47×     | **Low delta, high without** |
-| `golang-testing`                | v1.0.0  | 65         | 92%        | 60%           | +32pp     | 1.53×     | **Low delta**               |
-| `golang-troubleshooting`        | v1.0.0  | 186        | 100%       | **68%**       | +32pp     | 1.47×     | **Low delta, high without** |
-| `golang-context`                | v1.0.0  | 50         | 96%        | 62%           | +34pp     | 1.55×     |                             |
-| `golang-structs-interfaces`     | v1.0.0  | 52         | 100%       | **65%**       | +35pp     | 1.54×     | **High without**            |
-| `golang-observability`          | v1.0.0  | 185        | 100%       | 63%           | +37pp     | 1.59×     |                             |
-| `golang-design-patterns`        | v1.0.0  | 87         | 100%       | 63%           | +37pp     | 1.59×     |                             |
-| `golang-database`               | v1.0.0  | 74         | 95%        | 57%           | +38pp     | 1.67×     |                             |
-| `golang-project-layout`         | v1.0.0  | 55         | 100%       | 62%           | +38pp     | 1.61×     |                             |
-| `golang-data-structures`        | v1.0.0  | 36         | 100%       | 61%           | +39pp     | 1.64×     |                             |
-| `golang-performance`            | v1.0.0  | 272        | 100%       | 61%           | +39pp     | 1.64×     |                             |
-| `golang-concurrency`            | v1.0.0  | 62         | 100%       | 61%           | +39pp     | 1.64×     |                             |
-| `golang-code-style`             | v1.0.0  | 83         | **80%**    | 40%           | +40pp     | 2.00×     | **Low with-skill score**    |
-| `golang-linter`                 | v1.0.0  | 51         | 96%        | 55%           | +41pp     | 1.75×     |                             |
-| `golang-grpc`                   | v1.0.0  | 55         | 96%        | 55%           | +42pp     | 1.75×     |                             |
-| `golang-cli`                    | v1.0.0  | 58         | 95%        | 52%           | +43pp     | 1.83×     |                             |
-| `golang-stretchr-testify`       | v1.0.0  | 47         | 100%       | 53%           | +47pp     | 1.89×     |                             |
-| `golang-benchmark`              | v1.0.0  | 356        | 100%       | 50%           | +50pp     | 2.00×     |                             |
-| `golang-documentation`          | v1.0.0  | 103        | 90%        | 37%           | +53pp     | 2.43×     |                             |
-| `golang-samber-hot`             | v1.0.0  | 65         | 94%        | 40%           | +54pp     | 2.35×     |                             |
-| `golang-dependency-management`  | v1.0.0  | 52         | 100%       | 46%           | +54pp     | 2.17×     |                             |
-| `golang-stay-updated`           | v1.0.0  | 50         | 92%        | 36%           | +56pp     | 2.56×     |                             |
-| `golang-safety`                 | v1.0.0  | 151        | 99%        | 41%           | +58pp     | 2.41×     |                             |
-| `golang-continuous-integration` | v1.0.0  | 66         | 100%       | 41%           | +59pp     | 2.44×     |                             |
-| `golang-modernize`              | v1.0.0  | 76         | 95%        | 34%           | +61pp     | 2.79×     |                             |
+| `backend-go-naming`                 | v1.0.0  | 51         | 94%        | **71%**       | +24pp     | 1.32×     | **Low delta, high without** |
+| `backend-go-error-handling`         | v1.0.0  | 60         | 98%        | **72%**       | +27pp     | 1.36×     | **Low delta, high without** |
+| `backend-go-popular-libraries`      | v1.0.0  | 54         | 100%       | **70%**       | +30pp     | 1.43×     | **Low delta, high without** |
+| `backend-go-security`               | v1.0.0  | 110        | 100%       | **68%**       | +32pp     | 1.47×     | **Low delta, high without** |
+| `backend-go-testing`                | v1.0.0  | 65         | 92%        | 60%           | +32pp     | 1.53×     | **Low delta**               |
+| `backend-go-troubleshooting`        | v1.0.0  | 186        | 100%       | **68%**       | +32pp     | 1.47×     | **Low delta, high without** |
+| `backend-go-context`                | v1.0.0  | 50         | 96%        | 62%           | +34pp     | 1.55×     |                             |
+| `backend-go-structs-interfaces`     | v1.0.0  | 52         | 100%       | **65%**       | +35pp     | 1.54×     | **High without**            |
+| `backend-go-observability`          | v1.0.0  | 185        | 100%       | 63%           | +37pp     | 1.59×     |                             |
+| `backend-go-design-patterns`        | v1.0.0  | 87         | 100%       | 63%           | +37pp     | 1.59×     |                             |
+| `backend-go-database`               | v1.0.0  | 74         | 95%        | 57%           | +38pp     | 1.67×     |                             |
+| `backend-go-project-layout`         | v1.0.0  | 55         | 100%       | 62%           | +38pp     | 1.61×     |                             |
+| `backend-go-data-structures`        | v1.0.0  | 36         | 100%       | 61%           | +39pp     | 1.64×     |                             |
+| `backend-go-performance`            | v1.0.0  | 272        | 100%       | 61%           | +39pp     | 1.64×     |                             |
+| `backend-go-concurrency`            | v1.0.0  | 62         | 100%       | 61%           | +39pp     | 1.64×     |                             |
+| `backend-go-code-style`             | v1.0.0  | 83         | **80%**    | 40%           | +40pp     | 2.00×     | **Low with-skill score**    |
+| `backend-go-linter`                 | v1.0.0  | 51         | 96%        | 55%           | +41pp     | 1.75×     |                             |
+| `backend-go-grpc`                   | v1.0.0  | 55         | 96%        | 55%           | +42pp     | 1.75×     |                             |
+| `backend-go-cli`                    | v1.0.0  | 58         | 95%        | 52%           | +43pp     | 1.83×     |                             |
+| `backend-go-stretchr-testify`       | v1.0.0  | 47         | 100%       | 53%           | +47pp     | 1.89×     |                             |
+| `backend-go-benchmark`              | v1.0.0  | 356        | 100%       | 50%           | +50pp     | 2.00×     |                             |
+| `backend-go-documentation`          | v1.0.0  | 103        | 90%        | 37%           | +53pp     | 2.43×     |                             |
+| `backend-go-samber-hot`             | v1.0.0  | 65         | 94%        | 40%           | +54pp     | 2.35×     |                             |
+| `backend-go-dependency-management`  | v1.0.0  | 52         | 100%       | 46%           | +54pp     | 2.17×     |                             |
+| `backend-go-stay-updated`           | v1.0.0  | 50         | 92%        | 36%           | +56pp     | 2.56×     |                             |
+| `backend-go-safety`                 | v1.0.0  | 151        | 99%        | 41%           | +58pp     | 2.41×     |                             |
+| `backend-go-continuous-integration` | v1.0.0  | 66         | 100%       | 41%           | +59pp     | 2.44×     |                             |
+| `backend-go-modernize`              | v1.0.0  | 76         | 95%        | 34%           | +61pp     | 2.79×     |                             |
 | **Total (28 skills)**           |         | **2612**   | **98%**    | **55%**       | **+43pp** | **1.77×** |                             |
 
-## `golang-naming` — v1.0.0
+## `backend-go-naming` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -122,7 +122,7 @@
 
 </details>
 
-## `golang-code-style` — v1.0.0
+## `backend-go-code-style` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -245,7 +245,7 @@
 
 </details>
 
-## `golang-data-structures` — v1.0.0
+## `backend-go-data-structures` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -309,7 +309,7 @@
 
 </details>
 
-## `golang-safety` — v1.0.0
+## `backend-go-safety` — v1.0.0
 
 |             | With Skill        | Without Skill    | Delta     |
 | ----------- | ----------------- | ---------------- | --------- |
@@ -512,7 +512,7 @@
 
 </details>
 
-## `golang-error-handling` — v1.0.0
+## `backend-go-error-handling` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -600,7 +600,7 @@
 
 </details>
 
-## `golang-testing` — v1.0.0
+## `backend-go-testing` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -682,7 +682,7 @@
 
 </details>
 
-## `golang-modernize` — v1.0.0
+## `backend-go-modernize` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -784,7 +784,7 @@
 
 </details>
 
-## `golang-security` — v1.0.0
+## `backend-go-security` — v1.0.0
 
 |             | With Skill         | Without Skill    | Delta     |
 | ----------- | ------------------ | ---------------- | --------- |
@@ -932,7 +932,7 @@
 
 </details>
 
-## `golang-documentation` — v1.0.0
+## `backend-go-documentation` — v1.0.0
 
 |             | With Skill       | Without Skill    | Delta     |
 | ----------- | ---------------- | ---------------- | --------- |
@@ -1068,7 +1068,7 @@
 
 </details>
 
-## `golang-benchmark` — v1.0.0
+## `backend-go-benchmark` — v1.0.0
 
 |             | With Skill         | Without Skill     | Delta     |
 | ----------- | ------------------ | ----------------- | --------- |
@@ -1246,7 +1246,7 @@
 | 29.2 | Heap contains many pointers GC must trace                                                  | <span class="g">✓</span>       | <span class="g">✓</span>                                    |
 | 29.3 | Reduce pointer density: value types in slices/maps                                         | <span class="g">✓</span>       | <span class="g">✓</span>                                    |
 | 29.4 | Flatten structures or use [N]byte instead of string in hot structs                         | <span class="g">✓</span>       | <span class="r">✗</span>                                    |
-| 29.5 | References golang-performance skill for optimization patterns                              | <span class="g">✓</span>       | <span class="r">✗</span>                                    |
+| 29.5 | References backend-go-performance skill for optimization patterns                              | <span class="g">✓</span>       | <span class="r">✗</span>                                    |
 |      | **30. runtime-memmove-diagnosis** — memmove high in CPU profile                            | **<span class="g">5/5</span>** | **<span class="g">5/5</span>**                              |
 | 30.1 | runtime.memmove = large memory copies                                                      | <span class="g">✓</span>       | <span class="g">✓</span>                                    |
 | 30.2 | Common causes: slice append, copy() of large slices, string-to-byte                        | <span class="g">✓</span>       | <span class="g">✓</span>                                    |
@@ -1520,7 +1520,7 @@
 
 </details>
 
-## `golang-observability` — v1.0.0
+## `backend-go-observability` — v1.0.0
 
 |             | With Skill         | Without Skill     | Delta     |
 | ----------- | ------------------ | ----------------- | --------- |
@@ -1761,7 +1761,7 @@
 
 </details>
 
-## `golang-performance` — v1.0.0
+## `backend-go-performance` — v1.0.0
 
 |             | With Skill         | Without Skill     | Delta     |
 | ----------- | ------------------ | ----------------- | --------- |
@@ -2117,7 +2117,7 @@
 
 </details>
 
-## `golang-troubleshooting` — v1.0.0
+## `backend-go-troubleshooting` — v1.0.0
 
 |             | With Skill         | Without Skill     | Delta     |
 | ----------- | ------------------ | ----------------- | --------- |
@@ -2356,7 +2356,7 @@
 
 </details>
 
-## `golang-design-patterns` — v1.0.0
+## `backend-go-design-patterns` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -2477,7 +2477,7 @@
 
 </details>
 
-## `golang-cli` — v1.0.0
+## `backend-go-cli` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -2563,7 +2563,7 @@
 
 </details>
 
-## `golang-concurrency` — v1.0.0
+## `backend-go-concurrency` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -2654,7 +2654,7 @@
 
 </details>
 
-## `golang-context` — v1.0.0
+## `backend-go-context` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -2730,7 +2730,7 @@
 
 </details>
 
-## `golang-continuous-integration` — v1.0.0
+## `backend-go-continuous-integration` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -2826,7 +2826,7 @@
 </details>
 
 
-## `golang-dependency-management` — v1.0.0
+## `backend-go-dependency-management` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -2905,7 +2905,7 @@
 
 </details>
 
-## `golang-structs-interfaces` — v1.0.0
+## `backend-go-structs-interfaces` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -2984,7 +2984,7 @@
 
 </details>
 
-## `golang-linter` — v1.0.0
+## `backend-go-linter` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -3062,7 +3062,7 @@
 
 </details>
 
-## `golang-popular-libraries` — v1.0.0
+## `backend-go-popular-libraries` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -3143,7 +3143,7 @@
 
 </details>
 
-## `golang-project-layout` — v1.0.0
+## `backend-go-project-layout` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -3225,7 +3225,7 @@
 
 </details>
 
-## `golang-stay-updated` — v1.0.0
+## `backend-go-stay-updated` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -3301,7 +3301,7 @@
 
 </details>
 
-## `golang-database` — v1.0.0
+## `backend-go-database` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -3406,7 +3406,7 @@
 
 </details>
 
-## `golang-grpc` — v1.0.0
+## `backend-go-grpc` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |
@@ -3490,7 +3490,7 @@
 
 
 
-## `golang-stretchr-testify` — v1.0.0
+## `backend-go-stretchr-testify` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
 | ----------- | ---------------- | --------------- | --------- |
@@ -3565,7 +3565,7 @@
 </details>
 
 
-## `golang-samber-hot` — v1.0.0
+## `backend-go-samber-hot` — v1.0.0
 
 |             | With Skill      | Without Skill   | Delta     |
 | ----------- | --------------- | --------------- | --------- |

@@ -1,7 +1,7 @@
 {
   "name": "jimmy-skills",
-  "description": "Engineering skill pack for production-ready Go and backend projects",
-  "version": "1.0.0",
+  "description": "Multi-pack backend, frontend, and engineering skill kit",
+  "version": "1.1.0",
   "author": {
     "name": "Jim Nguyen",
     "email": "jimnguyendev@users.noreply.github.com"
@@ -12,9 +12,10 @@
   "keywords": [
     "claude-code",
     "plugin",
-    "go",
-    "golang",
     "backend",
+    "frontend",
+    "react",
+    "vue",
     "skills",
     "engineering"
   ]

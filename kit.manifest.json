@@ -1,12 +1,20 @@
 {
   "name": "jimmy-skills",
   "displayName": "Jimmy Skills",
-  "version": "1.0.0",
-  "description": "Manifest-first engineering skill pack for Go/backend work, curated for Jim Nguyen.",
+  "version": "1.1.0",
+  "description": "Manifest-first multi-pack skill kit for backend, frontend, and engineering workflows.",
   "paths": {
     "packs": "packs"
   },
   "packs": [
+    {
+      "id": "backend",
+      "path": "packs/backend/pack.manifest.json"
+    },
+    {
+      "id": "frontend",
+      "path": "packs/frontend/pack.manifest.json"
+    },
     {
       "id": "engineering",
       "path": "packs/engineering/pack.manifest.json"

@@ -1,0 +1,28 @@
+{
+  "name": "frontend",
+  "version": "1.1.0",
+  "description": "Frontend pack with shared frontend conventions plus framework-specific entry points.",
+  "capabilities": {
+    "toolAdapters": [],
+    "skills": {
+      "domain": [
+        {
+          "id": "frontend-core",
+          "path": "packs/frontend/skills/domain/frontend-core/SKILL.md"
+        },
+        {
+          "id": "frontend-react",
+          "path": "packs/frontend/skills/domain/frontend-react/SKILL.md"
+        },
+        {
+          "id": "frontend-vue",
+          "path": "packs/frontend/skills/domain/frontend-vue/SKILL.md"
+        }
+      ],
+      "process": []
+    }
+  },
+  "agents": [],
+  "commands": [],
+  "workflows": []
+}
