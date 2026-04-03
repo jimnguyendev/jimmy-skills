@@ -169,11 +169,13 @@ project/
 - **Features do not import each other directly** — if `invoice` needs user data, define a small interface in `invoice` and inject the implementation from `main`
 
 **When to split a package:**
+
 - The package has too many unrelated reasons to change (mixed concerns)
 - Every small feature change forces edits across many packages (wrong boundaries)
 - Two developers frequently conflict on the same files (ownership unclear)
 
 **When NOT to split yet:**
+
 - The project is small and one or two packages cover everything comfortably
 - You're splitting "just in case" — wait for real pain
 

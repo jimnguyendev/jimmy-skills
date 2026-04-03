@@ -2825,7 +2825,6 @@
 
 </details>
 
-
 ## `backend-go-dependency-management` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
@@ -3488,8 +3487,6 @@
 
 </details>
 
-
-
 ## `backend-go-stretchr-testify` — v1.0.0
 
 |             | With Skill       | Without Skill   | Delta     |
@@ -3563,7 +3560,6 @@
 | 11.3 | Mentions that testifylint catches assert/require misuse                                                                                  | <span class="g">✓</span>       | <span class="g">✓</span>                                       |
 
 </details>
-
 
 ## `backend-go-samber-hot` — v1.0.0
 
@@ -3660,5 +3656,3 @@
 | 15.4 | Does NOT recommend Get() for inspection                                             | <span class="g">✓</span>       | <span class="g">✓</span>                             |
 
 </details>
-
-

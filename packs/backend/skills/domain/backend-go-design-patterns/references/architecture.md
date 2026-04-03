@@ -113,6 +113,7 @@ func NewEmail(raw string) (Email, error) {
 Go enforces a strict rule: package imports must form a directed acyclic graph (DAG). If package A imports B, B cannot import A. The compiler rejects cycles outright.
 
 **Why Go prohibits cycles** (Rob Pike): "Import cycles can be convenient but their cost can be catastrophic."
+
 - **Compilation speed** — the compiler navigates dependency graphs more efficiently without cycles
 - **Better architecture** — cycles signal tight coupling; preventing them forces cleaner design
 - **Simpler maintenance** — non-circular structures make versioning and updates straightforward

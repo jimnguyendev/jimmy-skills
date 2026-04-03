@@ -109,6 +109,7 @@ internal/
 ```
 
 **Why feature-first wins at scale:**
+
 - **Locality** — modifying one feature means working mostly in one directory
 - **Ownership** — clear boundaries make team ownership and code review easier
 - **Circular dependency prevention** — features depend on shared code, not on each other
@@ -169,6 +170,7 @@ Go enforces that package imports form a DAG — no cycles allowed. If package A 
 3. **Use interfaces at the consumer side** — define a small interface where you need it, inject the concrete implementation from `main` or a wiring package
 
 **Prevention:**
+
 - Keep packages small and focused on one business capability (feature-first layout helps naturally)
 - Maintain one-way dependency direction across layers
 - If two features start depending on each other, extract the shared concept into a separate package or define consumer-side interfaces
