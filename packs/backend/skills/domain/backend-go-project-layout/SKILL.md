@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: jimnguyendev
-  version: "1.1.3"
+  version: "1.2.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent AskUserQuestion
 ---
 
@@ -70,7 +70,55 @@ Packages MUST be lowercase, singular, and match their directory name. → See `j
 
 All `main` packages must reside in `cmd/` with minimal logic — parse flags, wire dependencies, call `Run()`. Business logic belongs in `internal/` or `pkg/`. Use `internal/` for non-exported packages, `pkg/` only when code is useful to external consumers.
 
-See [directory layout examples](references/directory-layouts.md) for universal, small project, and library layouts, plus common mistakes.
+### Feature-First vs Layer-First (Recommended: Feature-First)
+
+For services beyond trivial size, **prefer feature-first layout** over layer-first. Group code by business capability, not by technical role:
+
+```
+# ❌ Layer-first — one feature scattered across 5+ folders
+internal/
+├── handlers/
+│   ├── user_handler.go
+│   └── invoice_handler.go
+├── services/
+│   ├── user_service.go
+│   └── invoice_service.go
+├── repository/
+│   ├── user_repo.go
+│   └── invoice_repo.go
+└── models/
+    ├── user.go
+    └── invoice.go
+
+# ✅ Feature-first — one feature lives in one place
+internal/
+├── user/
+│   ├── handler.go
+│   ├── service.go
+│   ├── repository.go
+│   ├── types.go
+│   └── routes.go
+├── invoice/
+│   ├── handler.go
+│   ├── service.go
+│   ├── repository.go
+│   └── types.go
+└── shared/            # only when truly cross-cutting
+    ├── middleware.go
+    └── pagination.go
+```
+
+**Why feature-first wins at scale:**
+- **Locality** — modifying one feature means working mostly in one directory
+- **Ownership** — clear boundaries make team ownership and code review easier
+- **Circular dependency prevention** — features depend on shared code, not on each other
+- **Incremental growth** — start with one package, split into features when pain appears
+
+**When layer-first is acceptable:** Very small services (< 500 lines) or pure CRUD apps where features are thin wrappers around a database.
+
+**Do not over-design too early.** Start with fewer packages than you think you need. Split when pain appears, not before.
+
+See [directory layout examples](references/directory-layouts.md) for universal, small project, library, and feature-first layouts, plus common mistakes.
 
 ## Essential Configuration Files
 
@@ -107,6 +155,25 @@ When starting a new Go project:
 - [ ] For monorepos: Initialize `go work` and add modules
 - [ ] Run `gofmt -s -w .` to ensure formatting
 - [ ] Add `.gitignore` with `/vendor/` and binary patterns
+
+## Circular Dependencies
+
+Go enforces that package imports form a DAG — no cycles allowed. If package A imports B, then B cannot import A.
+
+**Why Go prohibits them:** faster compilation, cleaner architecture, simpler maintenance.
+
+**Three solutions when you hit a cycle:**
+
+1. **Separate concerns** — move the function to the package where it logically belongs (e.g., stock checking belongs in `inventory`, not `product`)
+2. **Merge packages** — if two packages are inseparably intertwined, consolidate them into one
+3. **Use interfaces at the consumer side** — define a small interface where you need it, inject the concrete implementation from `main` or a wiring package
+
+**Prevention:**
+- Keep packages small and focused on one business capability (feature-first layout helps naturally)
+- Maintain one-way dependency direction across layers
+- If two features start depending on each other, extract the shared concept into a separate package or define consumer-side interfaces
+
+→ See `jimmy-skills@backend-go-design-patterns` for interface-based decoupling and dependency injection patterns.
 
 ## Related Skills
 

@@ -27,6 +27,80 @@ if err != nil {
 }
 ```
 
+## The Return Contract: nil error = usable value
+
+A function returning `(T, error)` makes one promise: **if error is nil, the value is usable. If error is non-nil, the value is meaningless.**
+
+```go
+// ✓ Good — contract is clear
+func GetUser(ctx context.Context, id string) (*User, error) {
+    row := db.QueryRowContext(ctx, "SELECT ...", id)
+    var u User
+    if err := row.Scan(&u.ID, &u.Name); err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, ErrUserNotFound // not found = real error
+        }
+        return nil, fmt.Errorf("scanning user: %w", err)
+    }
+    return &u, nil // non-nil user, nil error — safe to use
+}
+```
+
+### Never return nil, nil
+
+Returning `nil` for both value and error breaks the contract. It forces every caller to add an extra nil check, and forgetting that check causes nil pointer panics:
+
+```go
+// ✗ Bad — nil, nil forces callers to double-check
+func GetUser(ctx context.Context, id string) (*User, error) {
+    row := db.QueryRowContext(ctx, "SELECT ...", id)
+    var u User
+    if err := row.Scan(&u.ID, &u.Name); err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, nil // caller must now check both err AND user
+        }
+        return nil, err
+    }
+    return &u, nil
+}
+
+// Every caller becomes fragile:
+user, err := GetUser(ctx, id)
+if err != nil { ... }
+if user == nil { ... } // easy to forget — nil pointer panic waiting to happen
+```
+
+### "Not found" is a real error
+
+Treat "not found" as a sentinel error, not as a nil value. This matches `database/sql` using `sql.ErrNoRows`:
+
+```go
+var ErrUserNotFound = errors.New("user not found")
+
+// Caller — one clear check
+user, err := svc.GetUser(ctx, id)
+if errors.Is(err, ErrUserNotFound) {
+    // show "sign up" page or return 404
+    return
+}
+if err != nil {
+    // operation failed — maybe retry, maybe return 500
+    return
+}
+// err is nil — user is guaranteed usable
+fmt.Println(user.Name)
+```
+
+### Three-return alternative
+
+If your team genuinely wants "not found is not an error", use a bool to signal presence:
+
+```go
+func GetUser(ctx context.Context, id string) (user *User, found bool, err error)
+```
+
+This is valid but less common in service methods. Most Go APIs keep it simple with `(nil, ErrUserNotFound)`. Whichever style you choose, **be consistent across the codebase** — mixing styles forces callers to remember which functions use which pattern.
+
 ## Error String Conventions
 
 Error strings MUST be lowercase, without trailing punctuation, and should not duplicate the context that wrapping will add.

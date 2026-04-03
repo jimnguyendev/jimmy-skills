@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: jimnguyendev
-  version: "1.1.2"
+  version: "1.2.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent AskUserQuestion
 ---
 
@@ -243,12 +243,14 @@ Core principles regardless of architecture:
 - **Fail fast** — validate at boundaries, trust internal code
 - **Make illegal states unrepresentable** — use types to enforce invariants
 - **Respect 12-factor app** principles — → see `jimmy-skills@backend-go-project-layout`
+- **Feature-first layout** — group code by business capability, not by technical layer → see `jimmy-skills@backend-go-project-layout`
+- **No circular dependencies** — Go requires a DAG; use consumer-side interfaces and dependency injection to break cycles
 
 ## Detailed Guides
 
 | Guide | Scope |
 | --- | --- |
-| [Architecture Patterns](references/architecture.md) | High-level principles, when each architecture fits |
+| [Architecture Patterns](references/architecture.md) | High-level principles, circular dependency resolution, when each architecture fits |
 | [Clean Architecture](references/clean-architecture.md) | Use cases, dependency rule, layered adapters |
 | [Hexagonal Architecture](references/hexagonal-architecture.md) | Ports and adapters, domain core isolation |
 | [Domain-Driven Design](references/ddd.md) | Aggregates, value objects, bounded contexts |

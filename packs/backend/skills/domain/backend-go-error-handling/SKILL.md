@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: jimnguyendev
-  version: "1.1.1"
+  version: "1.2.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent
 ---
 
@@ -28,29 +28,31 @@ This skill assumes the project's structured logger is `zap`. If the team later r
 
 ## Best Practices Summary
 
-1. **Returned errors MUST always be checked** — NEVER discard with `_`
-2. **Errors MUST be wrapped with context** using `fmt.Errorf("{context}: %w", err)`
-3. **Error strings MUST be lowercase**, without trailing punctuation
-4. **Use `%w` internally, `%v` at system boundaries** to control error chain exposure
-5. **MUST use `errors.Is` and `errors.As`** instead of direct comparison or type assertion
-6. **SHOULD use `errors.Join`** (Go 1.20+) to combine independent errors
-7. **Errors MUST be either logged OR returned**, NEVER both (single handling rule)
-8. **Use sentinel errors** for expected conditions, custom types for carrying data
-9. **NEVER use `panic` for expected error conditions** — reserve for truly unrecoverable states
-10. **SHOULD use `zap`** for structured error logging — not `fmt.Println` or `log.Printf`
-11. **Attach operational context as structured fields** — request IDs, tenant IDs, and user IDs belong in logs, spans, or custom error types, not in ad-hoc string concatenation
-12. **Log HTTP requests** with structured middleware capturing method, path, status, and duration
-13. **Use log levels** to indicate error severity
-14. **Never expose technical errors to users** — translate internal errors to user-friendly messages, log technical details separately
-15. **Keep error messages low-cardinality** — don't interpolate variable data (IDs, paths, line numbers) into error strings; attach them as structured fields instead (via `zap` at the log site, spans, or custom error types) so APM/log aggregators (Datadog, Loki, Sentry) can group errors properly
+1. **nil error = usable value** — if a function returns `(T, error)`, nil error guarantees T is valid. NEVER return nil, nil
+2. **Returned errors MUST always be checked** — NEVER discard with `_`
+3. **Errors MUST be wrapped with context** using `fmt.Errorf("{context}: %w", err)`
+4. **Error strings MUST be lowercase**, without trailing punctuation
+5. **Use `%w` internally, `%v` at system boundaries** to control error chain exposure
+6. **MUST use `errors.Is` and `errors.As`** instead of direct comparison or type assertion
+7. **SHOULD use `errors.Join`** (Go 1.20+) to combine independent errors
+8. **Errors MUST be either logged OR returned**, NEVER both (single handling rule)
+9. **Use sentinel errors** for expected conditions (including "not found"), custom types for carrying data
+10. **Translate low-level errors to domain terms** at layer boundaries — map `sql.ErrNoRows` to `ErrUserNotFound`, but never hide real failures behind domain errors
+11. **NEVER use `panic` for expected error conditions** — not found is not a bug, a timeout is not a bug. Reserve panic for programmer mistakes
+12. **SHOULD use `zap`** for structured error logging — not `fmt.Println` or `log.Printf`
+13. **Attach operational context as structured fields** — request IDs, tenant IDs, and user IDs belong in logs, spans, or custom error types, not in ad-hoc string concatenation
+14. **Log HTTP requests** with structured middleware capturing method, path, status, and duration
+15. **Use log levels** to indicate error severity
+16. **Never expose technical errors to users** — translate internal errors to user-friendly messages, log technical details separately
+17. **Keep error messages low-cardinality** — don't interpolate variable data (IDs, paths, line numbers) into error strings; attach them as structured fields instead (via `zap` at the log site, spans, or custom error types) so APM/log aggregators (Datadog, Loki, Sentry) can group errors properly
 
 ## Detailed Reference
 
-- **[Error Creation](./references/error-creation.md)** — How to create errors that tell the story: error messages should be lowercase, no punctuation, and describe what happened without prescribing action. Covers sentinel errors (one-time preallocation for performance), custom error types (for carrying rich context), and the decision table for which to use when.
+- **[Error Creation](./references/error-creation.md)** — The `(value, error)` return contract (nil error = usable value), the nil,nil anti-pattern, sentinel errors for "not found", the three-return alternative, error string conventions, low-cardinality messages, custom error types, and the decision table for which strategy to use when.
 
 - **[Error Wrapping and Inspection](./references/error-wrapping.md)** — Why `fmt.Errorf("{context}: %w", err)` beats `fmt.Errorf("{context}: %v", err)` (chains vs concatenation). How to inspect chains with `errors.Is`/`errors.As` for type-safe error handling, and `errors.Join` for combining independent errors.
 
-- **[Error Handling Patterns and Logging](./references/error-handling.md)** — The single handling rule: errors are either logged OR returned, NEVER both (prevents duplicate logs cluttering aggregators). Panic/recover design, structured context at the logging boundary, and `zap` integration for APM tools.
+- **[Error Handling Patterns and Logging](./references/error-handling.md)** — Error translation across layers (mapping `sql.ErrNoRows` to domain sentinels without hiding real failures), the single handling rule, panic/recover design, structured context at the logging boundary, and `zap` integration for APM tools.
 
 ## Parallelizing Error Handling Audits
 

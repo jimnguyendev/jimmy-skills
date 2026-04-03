@@ -39,6 +39,56 @@ func handleOrder(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+## Error Translation Across Layers
+
+Translate low-level errors into domain terms at the boundary where they cross layers. The caller should not need to know whether storage is PostgreSQL, Redis, or an HTTP service — but it does need to know whether the item was not found vs the operation failed.
+
+```go
+// internal/user/repository.go — translates sql errors to domain errors
+var ErrUserNotFound = errors.New("user not found")
+
+func (r *Repository) GetByID(ctx context.Context, id string) (*User, error) {
+    row := r.db.QueryRowContext(ctx, "SELECT id, name, email FROM users WHERE id = $1", id)
+    var u User
+    if err := row.Scan(&u.ID, &u.Name, &u.Email); err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, ErrUserNotFound // translate to domain term
+        }
+        return nil, fmt.Errorf("querying user: %w", err) // preserve real failures
+    }
+    return &u, nil
+}
+```
+
+### What to translate, what to preserve
+
+| Low-level error | Domain translation | Why |
+| --- | --- | --- |
+| `sql.ErrNoRows` | `ErrUserNotFound` | Caller decides 404 vs "sign up" — doesn't need to know it was SQL |
+| Connection refused, timeout | Wrap with context, do NOT hide | Caller needs to know the operation failed and might be retryable |
+| Constraint violation (unique) | `ErrDuplicateEmail` or similar | Caller can show "email already taken" |
+| Unknown/unexpected DB error | Wrap with `fmt.Errorf("querying user: %w", err)` | Preserve for debugging, do not mask |
+
+```go
+// internal/user/handler.go — caller uses domain errors, not sql errors
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+    user, err := h.service.GetUser(r.Context(), chi.URLParam(r, "id"))
+    if errors.Is(err, ErrUserNotFound) {
+        http.Error(w, "user not found", http.StatusNotFound)
+        return
+    }
+    if err != nil {
+        logger.Error("get user failed", zap.Error(err))
+        http.Error(w, "internal error", http.StatusInternalServerError)
+        return
+    }
+    // err is nil — user is safe to use
+    respondJSON(w, user)
+}
+```
+
+**Do NOT** hide real failures behind vague domain errors. `"connection refused"` wrapped as `ErrUserNotFound` means the caller thinks the user doesn't exist when the database is actually down.
+
 ## Panic and Recover
 
 ### When to panic

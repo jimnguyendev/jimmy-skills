@@ -124,6 +124,59 @@ go build ./cmd/...        # Build all main packages
 go build ./cmd/server     # Build specific binary
 ```
 
+## Feature-First Layout (Recommended for Services)
+
+Structure code around business capabilities, not technical layers. Each feature package contains its own handler, service, repository, and types:
+
+```
+project/
+├── cmd/
+│   └── api/
+│       └── main.go            # Wire dependencies, start server
+├── internal/
+│   ├── user/                  # User feature
+│   │   ├── handler.go         # HTTP handlers for /users
+│   │   ├── service.go         # Business logic
+│   │   ├── repository.go      # Data access
+│   │   ├── types.go           # User, CreateUserRequest, etc.
+│   │   └── routes.go          # Route registration
+│   ├── invoice/               # Invoice feature
+│   │   ├── handler.go
+│   │   ├── service.go
+│   │   ├── repository.go
+│   │   └── types.go
+│   ├── auth/                  # Auth feature
+│   │   ├── handler.go
+│   │   ├── middleware.go
+│   │   ├── service.go
+│   │   └── types.go
+│   └── shared/                # Cross-cutting only when truly needed
+│       ├── middleware.go       # Request logging, recovery, etc.
+│       ├── pagination.go
+│       └── response.go        # Standard JSON response helpers
+├── go.mod
+├── go.sum
+├── Makefile
+├── .gitignore
+└── .golangci.yml
+```
+
+**Key rules:**
+
+- **Keep types near where they are used** — `user/types.go` defines `User`, not a global `models/` package
+- **File names do not repeat the package name** — `user/handler.go`, not `user/user_handler.go`
+- **`shared/` is a last resort** — only for code genuinely used by 3+ features
+- **Features do not import each other directly** — if `invoice` needs user data, define a small interface in `invoice` and inject the implementation from `main`
+
+**When to split a package:**
+- The package has too many unrelated reasons to change (mixed concerns)
+- Every small feature change forces edits across many packages (wrong boundaries)
+- Two developers frequently conflict on the same files (ownership unclear)
+
+**When NOT to split yet:**
+- The project is small and one or two packages cover everything comfortably
+- You're splitting "just in case" — wait for real pain
+
 ## Common Mistakes to Avoid
 
 ### Don't Do This

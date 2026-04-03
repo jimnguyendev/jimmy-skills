@@ -108,6 +108,82 @@ func NewEmail(raw string) (Email, error) {
 }
 ```
 
+## Breaking Circular Dependencies
+
+Go enforces a strict rule: package imports must form a directed acyclic graph (DAG). If package A imports B, B cannot import A. The compiler rejects cycles outright.
+
+**Why Go prohibits cycles** (Rob Pike): "Import cycles can be convenient but their cost can be catastrophic."
+- **Compilation speed** — the compiler navigates dependency graphs more efficiently without cycles
+- **Better architecture** — cycles signal tight coupling; preventing them forces cleaner design
+- **Simpler maintenance** — non-circular structures make versioning and updates straightforward
+
+### Solution 1: Separate Concerns Properly
+
+When two packages form a cycle, one of them is handling a responsibility that belongs elsewhere:
+
+```go
+// ❌ Cycle: product imports inventory, inventory imports product
+// package product
+func (p *Product) IsAvailable() bool {
+    return inventory.CheckStock(p.ID) > 0  // product → inventory
+}
+
+// package inventory
+func CheckStock(productID string) int {
+    p := product.Get(productID)  // inventory → product — CYCLE!
+    return p.StockCount
+}
+
+// ✅ Fix: stock checking belongs in inventory, not product
+// package inventory — accepts product ID, no need to import product
+func CheckStock(productID string) int {
+    return getStockCount(productID)
+}
+```
+
+### Solution 2: Merge Inseparable Packages
+
+When two packages are deeply intertwined with no clean split, consolidate them:
+
+```go
+// ❌ product/ and inventory/ are so coupled they import each other
+// ✅ Merge into a single package that handles both
+// package goods
+type Product struct { ... }
+type Stock struct { ... }
+func (p *Product) IsAvailable() bool { ... }
+```
+
+### Solution 3: Dependency Injection via Interfaces
+
+Define interfaces at the consumer side. Wire concrete implementations in `main`:
+
+```go
+// package invoice — defines what it needs, does NOT import user
+type UserLookup interface {
+    GetName(ctx context.Context, id string) (string, error)
+}
+
+type Service struct {
+    users UserLookup
+}
+
+// package user — implements the interface without knowing about invoice
+type Service struct { db *sql.DB }
+func (s *Service) GetName(ctx context.Context, id string) (string, error) { ... }
+
+// cmd/api/main.go — wires concrete implementations
+userSvc := user.NewService(db)
+invoiceSvc := invoice.NewService(userSvc) // user.Service satisfies invoice.UserLookup
+```
+
+### Prevention Strategies
+
+- **Feature-first layout** — packages organized by business capability naturally avoid cycles
+- **One-way dependency direction** — higher layers depend on lower layers, never the reverse
+- **Consumer-side interfaces** — depend on abstractions you define, not concrete packages
+- **Small, focused packages** — the smaller the surface area, the fewer cross-dependencies
+
 ## Detailed Architecture Guides
 
 For projects that warrant a formal architecture (typically 5K+ lines), see the dedicated guides:
