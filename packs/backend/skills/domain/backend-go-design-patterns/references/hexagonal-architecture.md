@@ -4,7 +4,7 @@
 
 Apply hexagonal architecture when a service interacts with multiple external systems (databases, APIs, message queues, caches) and you want the domain logic fully decoupled from all of them. Particularly effective when the same business logic needs multiple entry points (HTTP, gRPC, CLI, message consumer). Do NOT use for simple CRUD apps or libraries.
 
-Hexagonal architecture is an escalation path, not the default. Preserve feature-first locality even when introducing ports and adapters.
+Hexagonal architecture is an escalation path, not the default. Preserve feature-first locality even when introducing ports and adapters, and keep them inside the feature slice unless there is a strong reason not to.
 
 ## Core Concepts
 
@@ -48,8 +48,8 @@ order-service/
 ### Domain — pure business logic
 
 ```go
-// internal/domain/order.go
-package domain
+// internal/order/domain.go
+package order
 
 type Order struct {
     ID     string
@@ -69,25 +69,25 @@ func (o *Order) Ship() error {
 ### Ports — interfaces defined separately from implementations
 
 ```go
-// internal/port/incoming.go
-package port
+// internal/order/incoming.go
+package order
 
 // Primary port — how the outside world drives the application
 type OrderService interface {
-    PlaceOrder(ctx context.Context, items []domain.Item) (string, error)
+    PlaceOrder(ctx context.Context, items []Item) (string, error)
     ShipOrder(ctx context.Context, orderID string) error
-    GetOrder(ctx context.Context, orderID string) (*domain.Order, error)
+    GetOrder(ctx context.Context, orderID string) (*Order, error)
 }
 ```
 
 ```go
-// internal/port/outgoing.go
-package port
+// internal/order/outgoing.go
+package order
 
 // Secondary ports — how the application reaches external systems
 type OrderRepository interface {
-    Save(ctx context.Context, order *domain.Order) error
-    FindByID(ctx context.Context, id string) (*domain.Order, error)
+    Save(ctx context.Context, order *Order) error
+    FindByID(ctx context.Context, id string) (*Order, error)
 }
 
 type PaymentGateway interface {
@@ -98,20 +98,20 @@ type PaymentGateway interface {
 ### Service — implements primary port, depends on secondary ports
 
 ```go
-// internal/service/order_service.go
-package service
+// internal/order/service.go
+package order
 
 type orderService struct {
-    orders   port.OrderRepository
-    payments port.PaymentGateway
+    orders   OrderRepository
+    payments PaymentGateway
 }
 
-func NewOrderService(orders port.OrderRepository, payments port.PaymentGateway) port.OrderService {
+func NewOrderService(orders OrderRepository, payments PaymentGateway) OrderService {
     return &orderService{orders: orders, payments: payments}
 }
 
-func (s *orderService) PlaceOrder(ctx context.Context, items []domain.Item) (string, error) {
-    order := domain.NewOrder(items)
+func (s *orderService) PlaceOrder(ctx context.Context, items []Item) (string, error) {
+    order := NewOrder(items)
 
     if err := s.payments.Charge(ctx, order.ID, order.Total()); err != nil {
         return "", fmt.Errorf("charging payment: %w", err)
@@ -128,14 +128,14 @@ func (s *orderService) PlaceOrder(ctx context.Context, items []domain.Item) (str
 ### Primary Adapter — HTTP handler calls the service port
 
 ```go
-// internal/adapter/primary/http/order_handler.go
-package http
+// internal/order/http_handler.go
+package order
 
 type OrderHandler struct {
-    svc port.OrderService
+    svc OrderService
 }
 
-func NewOrderHandler(svc port.OrderService) *OrderHandler {
+func NewOrderHandler(svc OrderService) *OrderHandler {
     return &OrderHandler{svc: svc}
 }
 
@@ -159,8 +159,8 @@ func (h *OrderHandler) HandlePlaceOrder(w http.ResponseWriter, r *http.Request) 
 ### Secondary Adapter — implements a driven port
 
 ```go
-// internal/adapter/secondary/postgres/order_repo.go
-package postgres
+// internal/order/postgres_repo.go
+package order
 
 type OrderRepo struct {
     db *sql.DB
@@ -170,11 +170,11 @@ func NewOrderRepo(db *sql.DB) *OrderRepo {
     return &OrderRepo{db: db}
 }
 
-func (r *OrderRepo) Save(ctx context.Context, order *domain.Order) error {
+func (r *OrderRepo) Save(ctx context.Context, order *Order) error {
     // SQL upsert
 }
 
-func (r *OrderRepo) FindByID(ctx context.Context, id string) (*domain.Order, error) {
+func (r *OrderRepo) FindByID(ctx context.Context, id string) (*Order, error) {
     // SQL query
 }
 ```

@@ -256,9 +256,9 @@ Core principles regardless of architecture:
 | Guide | Scope |
 | --- | --- |
 | [Architecture Patterns](references/architecture.md) | Two-layer validation, circular dependency resolution, high-level principles |
-| [Clean Architecture](references/clean-architecture.md) | Use cases, dependency rule, layered adapters |
-| [Hexagonal Architecture](references/hexagonal-architecture.md) | Ports and adapters, domain core isolation |
-| [Domain-Driven Design](references/ddd.md) | Aggregates, value objects, bounded contexts |
+| [Clean Architecture](references/clean-architecture.md) | Dependency rule, use cases, vertical slices when complexity justifies them |
+| [Hexagonal Architecture](references/hexagonal-architecture.md) | Ports and adapters inside a feature slice, domain core isolation |
+| [Domain-Driven Design](references/ddd.md) | Aggregates, value objects, bounded contexts for genuinely complex domains |
 
 ## Code Philosophy
 

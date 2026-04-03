@@ -162,7 +162,7 @@ func TestUserRepoSuite(t *testing.T) {
 Run integration tests:
 
 ```bash
-go test -tags=integration -v ./internal/repository/...
+go test -tags=integration -v ./internal/users/...
 ```
 
 ### Test database with testcontainers-go

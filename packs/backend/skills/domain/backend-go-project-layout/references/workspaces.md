@@ -24,23 +24,25 @@ Example monorepo with multiple modules:
 ```
 my-monorepo/
 ├── go.work                    # Workspace file (see below)
-├── pkg/
-│   ├── auth/                 # Module 1: github.com/user/my-monorepo/pkg/auth
+├── services/
+│   ├── auth/                 # Module 1: github.com/user/my-monorepo/services/auth
 │   │   ├── go.mod
 │   │   ├── cmd/
 │   │   │   └── auth-server/
 │   │   │       └── main.go
 │   │   └── internal/
-│   │       └── handler/
-│   │           └── auth.go
-│   └── user/                 # Module 2: github.com/user/my-monorepo/pkg/user
+│   │       └── sessions/
+│   │           ├── handler.go
+│   │           └── service.go
+│   └── user/                 # Module 2: github.com/user/my-monorepo/services/user
 │       ├── go.mod
 │       ├── cmd/
 │       │   └── user-server/
 │       │       └── main.go
 │       └── internal/
-│           └── handler/
-│               └── user.go
+│           └── profiles/
+│               ├── handler.go
+│               └── service.go
 ├── cmd/
 │   └── api/                 # Module 3: github.com/user/my-monorepo/cmd/api
 │       ├── go.mod
@@ -94,7 +96,7 @@ go 1.21
 require github.com/user/my-monorepo/shared/libs v0.0.0
 ```
 
-The workspace automatically resolves `shared/libs` to the local directory.
+The workspace automatically resolves `shared/libs` to the local directory. Each module can still be feature-first internally; a workspace should not force technical-layer package trees.
 
 ## Workspace Commands
 

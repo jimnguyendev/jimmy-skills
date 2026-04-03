@@ -35,9 +35,9 @@ type Logger interface {
 | Package | Imports from prep-go-log | Why |
 | --- | --- | --- |
 | `cmd/*/main.go` | `prepzap`, `signoz`, `attr` | Initialization only |
-| `internal/infra/mdw/` | `attr` (for `ChainLogIdKey`) | Middleware injects chain ID |
-| `internal/infra/interceptor/` | `attr` (for `ChainLogIdKey`) | gRPC interceptor injects chain ID |
-| `internal/infra/kafka/` | `attr` (for `ChainLogIdKey`) | Consumer injects chain ID |
+| `internal/platform/http/` | `attr` (for `ChainLogIdKey`) | HTTP middleware injects chain ID |
+| `internal/platform/grpc/` | `attr` (for `ChainLogIdKey`) | gRPC interceptor injects chain ID |
+| `internal/platform/events/` | `attr` (for `ChainLogIdKey`) | Event consumer injects chain ID |
 | **Everything else** | **Nothing** — imports `pkg/log` local | Clean dependency boundary |
 
 ## Initialization
@@ -71,12 +71,12 @@ func main() {
 
     // 4. Inject logger into ALL constructors — it satisfies the local log.Logger interface
     gamifiDB, _ := database.NewLearningGamifi(ctx, logger, config)
-    userRepo := repository.NewUserCache(lnMysqlDB, lnMongoDB, lpDB, logger, rdb)
-    questRepo := repository.NewQuestCached(gamifiDB, logger, rdb)
-    dgsvc := service.NewDailygoal(logger, config, questRepo, dgRepo, userRepo, ...)
-    streakSvc := streak.NewService(logger, config, userRepo, streakRepo, questRepo)
-    dgHandler := handler.NewDailyGoal(responder, dgsvc)
-    streakHandler := handler.NewStreak(mode, responder, streakSvc)
+    usersRepo := users.NewCachedRepository(lnMysqlDB, lnMongoDB, lpDB, logger, rdb)
+    questsRepo := quests.NewCachedRepository(gamifiDB, logger, rdb)
+    dailygoalSvc := dailygoal.NewService(logger, config, questsRepo, dgRepo, usersRepo, ...)
+    streakSvc := streak.NewService(logger, config, usersRepo, streakRepo, questsRepo)
+    dailygoalHandler := dailygoal.NewHTTPHandler(responder, dailygoalSvc)
+    streakHandler := streak.NewHTTPHandler(mode, responder, streakSvc)
 
     // 5. Register shutdown — close logger and trace exporter
     app.RegisterShutdownFn(
@@ -107,12 +107,12 @@ logger := &console.Logger{Env: "test"}
 
 ## Dependency Injection Pattern
 
-The logger is injected as the project's **local** `log.Logger` interface through constructors at every layer. Never use a global logger. Never import prep-go-log outside of `cmd/` and middleware.
+The logger is injected as the project's **local** `log.Logger` interface through constructors in each feature package. Never use a global logger. Never import prep-go-log outside of `cmd/` and the narrow platform packages that attach request metadata.
 
 ```go
 import "your-project/pkg/log"  // local interface, NOT prep-go-log
 
-// internal/application/service/dailygoal.go
+// internal/dailygoal/service.go
 type Dailygoal struct {
     logger       log.Logger
     config       *config.Config

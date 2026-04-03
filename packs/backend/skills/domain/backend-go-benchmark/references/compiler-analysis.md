@@ -84,18 +84,18 @@ go build -gcflags="-m" ./... 2>&1 | grep "inlining call to"
 go build -gcflags="-m -m" ./... 2>&1 | grep "inline"
 
 # Filter to a specific function
-go build -gcflags="-m" ./pkg/handler 2>&1 | grep "HandleRequest"
+go build -gcflags="-m" ./internal/users 2>&1 | grep "HandleRequest"
 
 # Show both inlining and escape analysis together (they interact)
-go build -gcflags="-m" ./pkg/handler 2>&1 | grep -E "(inline|escape|moved to heap)"
+go build -gcflags="-m" ./internal/users 2>&1 | grep -E "(inline|escape|moved to heap)"
 ```
 
 ### Reading the output
 
 ```
-./pkg/handler/handler.go:20:6: can inline validateInput
-./pkg/handler/handler.go:35:6: cannot inline HandleRequest: function too complex: cost 120 exceeds budget 80
-./pkg/handler/handler.go:42:19: inlining call to validateInput
+./internal/users/handler.go:20:6: can inline validateInput
+./internal/users/handler.go:35:6: cannot inline HandleRequest: function too complex: cost 120 exceeds budget 80
+./internal/users/handler.go:42:19: inlining call to validateInput
 ```
 
 The inline cost budget is 80 (as of Go 1.22+). Functions with higher cost (more AST nodes, complex control flow) are not inlined.

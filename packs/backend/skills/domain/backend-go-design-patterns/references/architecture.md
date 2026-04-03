@@ -296,7 +296,7 @@ invoiceSvc := invoice.NewService(userSvc) // user.Service satisfies invoice.User
 For projects that warrant a formal architecture (typically 5K+ lines), see the dedicated guides:
 
 - [Domain-Driven Design (DDD)](./ddd.md) — aggregates, value objects, bounded contexts
-- [Clean Architecture](./clean-architecture.md) — use cases, dependency rule, layered adapters
+- [Clean Architecture](./clean-architecture.md) — use cases, dependency rule, vertical slices when warranted
 - [Hexagonal Architecture](./hexagonal-architecture.md) — ports, adapters, domain core isolation
 
 ## 12-Factor App Principles

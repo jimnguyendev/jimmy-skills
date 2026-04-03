@@ -92,13 +92,13 @@ internal/
 
 # ✅ Feature-first — one feature lives in one place
 internal/
-├── user/
+├── users/
 │   ├── handler.go
 │   ├── service.go
 │   ├── repository.go
 │   ├── types.go
 │   └── routes.go
-├── invoice/
+├── invoices/
 │   ├── handler.go
 │   ├── service.go
 │   ├── repository.go
@@ -117,7 +117,7 @@ internal/
 
 **Extra rule:** shared packages stay small and boring. Create `shared/`, `platform/`, or `common/` only for truly cross-cutting code, not as a dumping ground for every type used by more than one file.
 
-**When layer-first is acceptable:** Very small services (< 500 lines) or pure CRUD apps where features are thin wrappers around a database.
+**Layer-first is not the default.** In very small or short-lived services it may be tolerated briefly, but do not introduce technical-layer folders by reflex. Start with one package or feature packages, then split only when the code proves it needs the extra boundary.
 
 **Do not over-design too early.** Start with fewer packages than you think you need. Split when pain appears, not before.
 

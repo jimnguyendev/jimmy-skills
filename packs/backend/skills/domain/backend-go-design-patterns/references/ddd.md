@@ -6,6 +6,8 @@ Apply DDD when the business domain is complex enough that the code structure sho
 
 DDD is for genuine domain complexity. It should not replace simple feature-first structure in ordinary APIs.
 
+Start from a simple `internal/order/` or `internal/billing/` package first. Split into `domain/`, `application/`, and `adapters/` only when the domain is rich enough that the extra boundary reduces confusion more than it adds ceremony.
+
 ## Building Blocks
 
 | Concept | Go Mapping | Purpose |
@@ -19,7 +21,7 @@ DDD is for genuine domain complexity. It should not replace simple feature-first
 
 ## Project Structure
 
-Organize by **bounded context**, grouping domain, application, and adapters vertically. This scales across multiple contexts and clarifies ownership.
+Organize by **bounded context**, grouping domain, application, and adapters vertically when the complexity is real. The bounded context still acts like a feature slice: most work on one business capability should stay inside one subtree.
 
 ```
 order-service/

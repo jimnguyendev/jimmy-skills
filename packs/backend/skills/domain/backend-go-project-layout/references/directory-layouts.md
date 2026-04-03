@@ -16,11 +16,13 @@ project/
 │   └── worker/            # Main application #5
 │       └── main.go
 ├── internal/              # Private application code (`internal/` MUST be used for non-exported packages)
-│   ├── app/              # Application initialization
-│   ├── config/           # Configuration loading
-│   ├── handler/          # HTTP/request handlers
-│   ├── model/            # Data models/domain
-│   └── service/          # Business logic
+│   ├── users/            # Feature package
+│   │   ├── handler.go
+│   │   ├── service.go
+│   │   ├── repository.go
+│   │   └── types.go
+│   ├── invoices/         # Another feature package
+│   └── platform/         # Shared runtime wiring/config only when needed
 ├── pkg/                   # Public libraries (optional - only if useful to others)
 │   └── logger/
 │       └── logger.go
@@ -126,7 +128,7 @@ go build ./cmd/server     # Build specific binary
 
 ## Feature-First Layout (Recommended for Services)
 
-Structure code around business capabilities, not technical layers. Each feature package contains its own handler, service, repository, and types:
+Structure code around business capabilities, not technical layers. A feature package should contain the files that feature actually needs, whether that is one file or several:
 
 ```
 project/
@@ -134,13 +136,13 @@ project/
 │   └── api/
 │       └── main.go            # Wire dependencies, start server
 ├── internal/
-│   ├── user/                  # User feature
+│   ├── users/                 # Users feature
 │   │   ├── handler.go         # HTTP handlers for /users
 │   │   ├── service.go         # Business logic
 │   │   ├── repository.go      # Data access
 │   │   ├── types.go           # User, CreateUserRequest, etc.
 │   │   └── routes.go          # Route registration
-│   ├── invoice/               # Invoice feature
+│   ├── invoices/              # Invoices feature
 │   │   ├── handler.go
 │   │   ├── service.go
 │   │   ├── repository.go
@@ -163,10 +165,11 @@ project/
 
 **Key rules:**
 
-- **Keep types near where they are used** — `user/types.go` defines `User`, not a global `models/` package
-- **File names do not repeat the package name** — `user/handler.go`, not `user/user_handler.go`
+- **Keep types near where they are used** — `users/types.go` defines `User`, not a global `models/` package
+- **File names do not repeat the package name** — `users/handler.go`, not `users/user_handler.go`
 - **`shared/` is a last resort** — only for code genuinely used by 3+ features
 - **Features do not import each other directly** — if `invoice` needs user data, define a small interface in `invoice` and inject the implementation from `main`
+- **`platform/` or `shared/` must stay small** — do not move feature code there just because two files use it
 
 **When to split a package:**
 
@@ -200,7 +203,7 @@ myproject/
 │   └── myapp/
 │       └── main.go   # Main in cmd/
 ├── internal/
-│   ├── util/         # Specific utility names
-│   └── format/       # Or domain-specific names
+│   ├── users/        # Feature names first
+│   └── platform/     # Cross-cutting runtime code only
 └── pkg/              # Only if useful to others
 ```

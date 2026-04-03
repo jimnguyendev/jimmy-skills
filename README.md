@@ -42,7 +42,7 @@ internal/
   models/
 ```
 
-The goal is locality. If you change one business capability, you should mostly work in one place.
+The goal is locality. If you change one business capability, you should mostly work in one place. Keep those role-based files only when they are earning their keep; one or two files in a feature package is often enough early on.
 
 ### 2. Start with fewer packages
 

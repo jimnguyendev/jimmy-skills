@@ -17,16 +17,17 @@ Go uses suffix-based naming for test-related files:
 
 ```
 internal/
-├── handler/
-│   ├── handler.go          # Production code
-│   ├── handler_test.go     # Tests for handler
-│   └── handler_bench_test.go  # Benchmarks (optional)
-├── service/
+├── users/
+│   ├── handler.go
+│   ├── handler_test.go
+│   ├── handler_bench_test.go
 │   ├── service.go
-│   └── service_test.go
-└── model/
-    ├── user.go
-    └── user_test.go
+│   ├── service_test.go
+│   ├── repository.go
+│   └── repository_test.go
+└── invoices/
+    ├── service.go
+    └── service_test.go
 
 pkg/
 └── logger/
@@ -36,7 +37,8 @@ pkg/
 
 **Key principles:**
 
-- Tests live in the **same package** as the code (e.g., `package handler`)
+- Tests live in the **same package** as the code (e.g., `package users`)
+- In feature-first codebases, tests stay inside the feature directory rather than under global `handler/` or `service/` buckets
 - Test files are in the **same directory** as the code they test
 - Use `_test.go` suffix for all test files
 
@@ -47,11 +49,11 @@ When writing tests, you have two options for the package declaration:
 **Option 1: Same package (white-box testing)**
 
 ```go
-package handler  // Same package, can access unexported
+package users  // Same package, can access unexported
 
 import "testing"
 
-func TestHandler(t *testing.T) {
+func TestCreateUser(t *testing.T) {
     // Can access unexported functions and types
     internalFunction()
 }
@@ -60,13 +62,13 @@ func TestHandler(t *testing.T) {
 **Option 2: Package with `_test` suffix (black-box testing)**
 
 ```go
-package handler_test  // Different package, only exported API
+package users_test  // Different package, only exported API
 
 import "testing"
 
-func TestHandler(t *testing.T) {
+func TestCreateUser(t *testing.T) {
     // Can only access exported functions and types
-    handler.PublicMethod()
+    users.PublicMethod()
 }
 ```
 
@@ -154,7 +156,7 @@ Fixtures are test data files used across multiple tests. Use one of these patter
 
 ```
 internal/
-└── handler/
+└── users/
     ├── handler.go
     ├── handler_test.go
     └── testdata/
@@ -179,7 +181,7 @@ test/
 
 ```
 internal/
-└── handler/
+└── users/
     ├── handler.go
     ├── handler_test.go
     └── testdata/
@@ -197,7 +199,7 @@ internal/
 
 ```bash
 go test ./...                    # Run all tests
-go test ./internal/handler       # Test specific package
+go test ./internal/users         # Test specific feature package
 go test -v ./...                 # Verbose output
 go test -race ./...              # Race detection
 go test -cover ./...             # Coverage report

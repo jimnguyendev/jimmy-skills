@@ -122,7 +122,7 @@ func (uc *PlaceOrderUseCase) Execute(ctx context.Context, orderID string) error 
 ### Adapter — implements a port
 
 ```go
-// internal/adapter/repository/order_postgres.go
+// internal/order/postgres_repo.go
 package repository
 
 type OrderPostgres struct {
@@ -145,7 +145,7 @@ func (r *OrderPostgres) Save(ctx context.Context, order *entity.Order) error {
 ### Handler — translates HTTP to use case calls
 
 ```go
-// internal/adapter/handler/order_handler.go
+// internal/order/http_handler.go
 package handler
 
 type OrderHandler struct {
@@ -167,7 +167,7 @@ func (h *OrderHandler) HandlePlaceOrder(w http.ResponseWriter, r *http.Request) 
 
 ## Key Principle
 
-Interfaces live where they are consumed, not where they are implemented. The `usecase/order/port.go` file defines `OrderRepository` — the adapter in `adapter/repository/` implements it. This keeps the use case layer free from infrastructure imports.
+Interfaces live where they are consumed, not where they are implemented. The `internal/order/port.go` file defines `OrderRepository` — the concrete repo in `internal/order/postgres_repo.go` implements it. This keeps the use case layer free from infrastructure imports.
 
 The more important rule is still locality: clean architecture should not force one order-related change to jump through five unrelated top-level directories.
 
