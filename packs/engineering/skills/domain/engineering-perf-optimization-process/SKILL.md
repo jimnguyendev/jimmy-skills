@@ -68,13 +68,13 @@ Optimizing a cold path that handles 2% of traffic while the hot path is untouche
 
 **Do not guess the bottleneck. Profile it.**
 
-| Bottleneck type | How to identify | Tool |
+| Bottleneck type | How to identify | Example tools |
 |---|---|---|
-| CPU bound | Function dominates CPU profile | pprof, flamegraph |
-| I/O bound | Goroutines blocked on network/DB | fgprof, distributed tracing |
-| Memory pressure | High GC%, frequent OOM | heap profile, GOMEMLIMIT |
-| Contention | Mutex/lock profile hot | block profile, mutex profile |
-| External dependency | Span breakdown shows slow upstream | OpenTelemetry traces |
+| CPU bound | Function dominates CPU profile | Flamegraph, language profiler (Go: pprof, Java: async-profiler) |
+| I/O bound | Threads/goroutines blocked on network/DB | Wall-clock profiler, distributed tracing |
+| Memory pressure | High GC%, frequent OOM | Heap profiler, memory limits (Go: GOMEMLIMIT, JVM: -Xmx) |
+| Contention | Lock/mutex profile hot | Lock profiler, block profile |
+| External dependency | Span breakdown shows slow upstream | OpenTelemetry traces, APM |
 
 **If you have not profiled, STOP. Intuition about bottlenecks is wrong ~80% of the time.**
 

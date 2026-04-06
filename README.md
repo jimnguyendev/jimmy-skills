@@ -160,21 +160,8 @@ packs/
 ## Install
 
 ```bash
-npx skills add https://github.com/jimnguyendev/jimmy-skills --all
+/plugin marketplace add jimmy-skills@jimmy-skills
 ```
-
-Or:
-
-```bash
-git clone https://github.com/jimnguyendev/jimmy-skills.git ~/.agents/skills/jimmy-skills
-```
-
-## Important Files
-
-- [kit.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/kit.manifest.json)
-- [packs/backend/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/backend/pack.manifest.json)
-- [packs/frontend/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/frontend/pack.manifest.json)
-- [packs/engineering/pack.manifest.json](/Users/jimnguyen/workspaces/kits/pro-workflow/tmp/cc-skills-golang/packs/engineering/pack.manifest.json)
 
 ## Notes
 

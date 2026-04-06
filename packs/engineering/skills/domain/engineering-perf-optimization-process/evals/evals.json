@@ -62,6 +62,18 @@
         "The agent recommends setting up observability/monitoring first",
         "The agent suggests adding optimizations later when metrics justify them"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Our product listing endpoint handles 15K RPS (85% of traffic). Target: p99 < 50ms. Current p99 is 120ms. Profiling shows: DB queries optimized (index-only, 8ms), Redis cache hit rate 95% but Redis GET is 3ms and accounts for 70% of remaining p99. We already have feature flags and load test scripts. Should we add L1 in-process cache?",
+      "expected_output": "The agent should acknowledge all gates are satisfied and proceed with recommending L1 cache (step 3 of escalation ladder). The bottleneck is clearly identified, targets are concrete, and rollback infrastructure exists.",
+      "assertions": [
+        "The agent acknowledges that the constraints and profiling evidence are sufficient",
+        "The agent recommends adding in-process L1 cache as the next step",
+        "The agent does NOT block on gathering more information since all gates are satisfied",
+        "The agent mentions specific L1 implementation advice (TTL, size limits, invalidation strategy)",
+        "The agent reminds to verify improvement with load testing after implementation"
+      ]
     }
   ]
 }
