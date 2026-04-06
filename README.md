@@ -49,7 +49,9 @@ Seven principles drive every skill in this repo.
                     └─────────────────────────────────────┘
 ```
 
-### 1-5: How we organize code
+> Programming is thinking, not typing. Structure serves clarity, not paradigm.
+
+### 1. Organize around business capabilities
 
 Group code by business capability, not by technical role.
 
@@ -64,10 +66,44 @@ internal/                          internal/
   posts/
 ```
 
-- Start with one package. Split when pain appears, not before.
-- Names do not stutter. If the package says `users`, the type is `Service`, not `UserService`.
-- Types stay near their usage. No giant shared `models.go`.
-- Package imports form a DAG. Cycles mean the boundary is wrong — fix the boundary, not the tooling.
+The goal is locality. If you change one business capability, you should mostly work in one place. Keep role-based files only when they are earning their keep; one or two files in a feature package is often enough early on.
+
+### 2. Start with fewer packages
+
+Do not design five layers before the code needs them.
+
+- One package is often enough at the beginning.
+- Split when pain appears, not before.
+- If one small change forces edits across many packages, the boundaries are wrong.
+
+### 3. Keep names short
+
+Avoid naming noise.
+
+- File names should not repeat the package name.
+- Types should not repeat the package name.
+- Methods should not repeat the receiver type name.
+
+If the package already says `users`, prefer `Service.Create`, not `UserService.CreateUser`.
+
+### 4. Keep types near usage
+
+Avoid giant shared buckets like `models.go`.
+
+- Request and response types stay near the transport layer that owns them.
+- Persistence-only types stay near the repository that uses them.
+- Feature-shared types can live in that feature's `types.go`.
+- Extract shared packages only when the sharing is real.
+
+### 5. Keep dependency direction one-way
+
+Package imports must form a DAG. If two features need each other:
+
+1. Move behavior to the package that owns the concern.
+2. Merge the packages if they are really one unit.
+3. Define a small interface in the consumer package and inject the concrete dependency from wiring code.
+
+Import cycles are treated as a boundary problem, not as a tooling annoyance.
 
 ### 6: Constrain before you optimize
 
