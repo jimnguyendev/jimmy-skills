@@ -1,153 +1,174 @@
 # jimmy-skills
 
-`jimmy-skills` is a stack-first skill kit for backend, frontend, and engineering work.
+An opinionated skill kit that teaches AI agents how experienced engineers build software — not just what code to write, but when to write it, when to stop, and how to prove it works.
 
-This repo is opinionated. For backend APIs, it prefers:
+```bash
+/plugin marketplace add jimmy-skills@jimmy-skills
+```
 
-- feature-first packages over technical-layer folders
-- simple boundaries before abstraction
-- types close to where they are used
-- short, non-redundant names
-- one-way dependencies and consumer-side interfaces
+## Why this exists
 
-It is not trying to preserve the structure of `samber/cc-skills-golang`. Some skills still reuse or reference upstream material where useful, especially library-specific backend skills, but the repo direction is now driven by Jim Nguyen's architecture conventions.
+AI agents can produce thousands of lines of code per day. Without constraints, that code creates systems harder to understand, debug, and operate than what it replaced.
 
-## Core Philosophy
+The gap between a casual prompt and an engineering specification is not a typing problem. It is a judgment problem.
 
-### 1. Organize around business capabilities
+```
+casual:       "please build a high performance news feed app"
 
-If you are building a Go API, the default is to group code by feature, not by role.
+experienced:  "p95 < 80ms at 2,500 RPS sustained, CPU < 65%,
+               profile before optimizing, feature flag each change,
+               load test proves improvement, rollback plan for each PR"
+```
 
-Prefer this:
+This repo encodes that judgment as skills — reusable instruction sets that guide AI agents to make engineering decisions, not just produce output.
+
+## Philosophy
+
+Seven principles drive every skill in this repo.
 
 ```text
-internal/
-  users/
-    handler.go
-    service.go
-    repository.go
-    routes.go
+                    ┌─────────────────────────────────────┐
+                    │         HOW WE ORGANIZE              │
+                    │                                       │
+                    │  1. Feature-first, not layer-first    │
+                    │  2. Fewer packages, split when pain   │
+                    │  3. Short names, no stuttering        │
+                    │  4. Types near where they are used    │
+                    │  5. One-way dependencies (DAG)        │
+                    │                                       │
+                    ├─────────────────────────────────────  │
+                    │         HOW WE OPTIMIZE               │
+                    │                                       │
+                    │  6. Constrain before you optimize     │
+                    │                                       │
+                    ├─────────────────────────────────────  │
+                    │         HOW WE SHIP                   │
+                    │                                       │
+                    │  7. Enforce correctness with gates    │
+                    │                                       │
+                    └─────────────────────────────────────┘
+```
+
+### 1-5: How we organize code
+
+Group code by business capability, not by technical role.
+
+```text
+internal/                          internal/
+  users/                             handlers/
+    handler.go                       services/
+    service.go        PREFER         repository/      AVOID
+    repository.go     ────────►      models/
     types.go
   invoices/
   posts/
 ```
 
-Over this:
+- Start with one package. Split when pain appears, not before.
+- Names do not stutter. If the package says `users`, the type is `Service`, not `UserService`.
+- Types stay near their usage. No giant shared `models.go`.
+- Package imports form a DAG. Cycles mean the boundary is wrong — fix the boundary, not the tooling.
+
+### 6: Constrain before you optimize
+
+No optimization without these:
 
 ```text
-internal/
-  handlers/
-  services/
-  repository/
-  models/
+  "Make it faster"
+        │
+        ▼
+  ┌─ GATE 1 ─┐     What are the hard targets?
+  │  Targets  │     p95 < 80ms? 2,500 RPS? CPU < 65%?
+  └─────┬─────┘
+        ▼
+  ┌─ GATE 2 ─┐     Which endpoints are >80% of traffic?
+  │ Hot path  │     What latency distribution? Read/write ratio?
+  └─────┬─────┘
+        ▼
+  ┌─ GATE 3 ─┐     What does the profiler say?
+  │ Profile   │     CPU bound? I/O bound? Contention?
+  └─────┬─────┘
+        ▼
+  ┌─ GATE 4 ─┐     Escalation ladder: simplest fix first
+  │ Solution  │     Fix query → Redis → L1 → singleflight → zero-ser
+  └─────┬─────┘     Each step needs metric proof to escalate
+        ▼
+  ┌─ GATE 5 ─┐     Feature flag? Load test? Rollback plan?
+  │ Rollback  │     If you can't roll back independently, don't ship
+  └───────────┘
 ```
 
-The goal is locality. If you change one business capability, you should mostly work in one place. Keep those role-based files only when they are earning their keep; one or two files in a feature package is often enough early on.
+### 7: Enforce correctness with quality gates
 
-### 2. Start with fewer packages
-
-Do not design five layers before the code needs them.
-
-- one package is often enough at the beginning
-- split when pain appears, not before
-- if one small change forces edits across many packages, the boundaries are wrong
-
-### 3. Keep names short
-
-Avoid naming noise.
-
-- file names should not repeat the package name
-- types should not repeat the package name
-- methods should not repeat the receiver type name
-
-If the package already says `users`, prefer `Service.Create`, not `UserService.CreateUser`.
-
-### 4. Keep types near usage
-
-Avoid giant shared buckets like `models.go`.
-
-- request and response types should stay near the transport layer that owns them
-- persistence-only types should stay near the repository that uses them
-- feature-shared types can live in that feature's `types.go`
-- extract shared packages only when the sharing is real
-
-### 5. Keep dependency direction one-way
-
-Package imports must form a DAG.
-
-If two features need each other:
-
-1. move behavior to the package that owns the concern
-2. merge the packages if they are really one unit
-3. define a small interface in the consumer package and inject the concrete dependency from wiring code
-
-Import cycles are treated as a boundary problem, not as a tooling annoyance.
-
-### 6. Constrain before you optimize
-
-AI can produce thousands of lines of optimized code per day. Without engineering constraints, that code creates systems harder to understand, debug, and operate than the "slow" version it replaced.
-
-The gap between a casual request ("make it high performance") and an engineering specification (concrete latency targets, CPU budgets, profiling proof, rollback plans) is not a typing problem. It is a judgment problem. Skills in this repo encode that judgment.
-
-**Rules:**
-
-- No optimization without measurable targets. "Make it faster" must become "p95 < 80ms at 2,500 RPS."
-- No optimization without profiling proof. Intuition about bottlenecks is wrong ~80% of the time.
-- Every optimization follows an escalation ladder: fix the query, then add cache, then add L1, then add stampede protection. Each step requires metric proof before escalating to the next.
-- Every optimization must be independently reversible via feature flags.
-- Every optimization PR includes before/after load test numbers and a rollback plan.
-
-### 7. Enforce correctness with quality gates
-
-AI optimizes for "task done." Engineering optimizes for "still works next month, under load, with new features, and with other people touching it."
-
-Without quality gates, the codebase grows faster than your ability to understand, secure, and run it. Nothing goes in just because it "works on my machine" or because the AI sounded confident.
-
-**Minimum gates for every change:**
-
-- CI pipeline on every pull request: formatting, linting, type checking, test suite. No merge if red.
-- Integration tests for critical paths: auth, permissions, data integrity, money flows, external API contracts. These catch spaghetti behavior even when unit tests pass.
-- Security automation: dependency scanning, secret scanning, SAST. No string-built SQL, no unsanitized HTML, no logging secrets, no "temporary" admin bypasses. Boring rules scale better than heroic review.
-- Load test proof for performance changes: dataset matching production cardinality, before/after numbers, flamegraph comparison.
-
-The system must force correctness. The easiest way is to make the computer reject bad changes automatically.
-
-## Packs
-
-### Backend
-
-The backend pack follows the philosophy above.
-
-- `backend-core` holds shared backend architectural rules
-- `backend-go-project-layout` encodes feature-first layout and import-cycle prevention
-- `backend-go-code-style` covers readability, locality, naming noise, and package boundaries
-- `backend-go-linter` is explicitly limited to tooling and must not drive architecture decisions
-- `backend-go-*` skills cover Go implementation details once the architectural direction is already clear
-
-### Frontend
-
-The frontend pack is intentionally lighter right now.
-
-- `frontend-core` for shared UI architecture
-- `frontend-react` for React
-- `frontend-vue` for Vue
-
-### Engineering
-
-The engineering pack covers stack-agnostic delivery, review workflows, and constraint-driven process.
-
-- `engineering-rest-api-design` for API contract design
-- `engineering-perf-optimization-process` for constraint-driven performance work: five gates (targets, hot path, profiling, escalation ladder, rollback), quality gate enforcement, and validation requirements. Prevents over-engineering by requiring metric proof before applying any optimization pattern.
-
-## Layout
+AI optimizes for "task done." Engineering optimizes for "still works next month."
 
 ```text
-kit.manifest.json
+  Every change must pass:
+
+  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+  │   CI green   │  │  Integration │  │   Security    │  │  Load test   │
+  │              │  │    tests     │  │  automation   │  │   (if perf)  │
+  │ lint, type,  │  │ auth, money, │  │ deps, secrets │  │ before/after │
+  │ format, test │  │ permissions  │  │ SAST, no SQL  │  │ flamegraph   │
+  │              │  │              │  │ injection     │  │              │
+  │  red = stop  │  │ catches      │  │ boring rules  │  │ "works on my │
+  │              │  │ spaghetti    │  │ scale better  │  │  machine" is │
+  │              │  │              │  │ than heroic   │  │  not proof   │
+  │              │  │              │  │ review        │  │              │
+  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
+```
+
+Nothing goes in just because the AI sounded confident.
+
+## Skill packs
+
+```text
+jimmy-skills
+├── backend           30 skills — architecture + Go implementation
+│   ├── backend-core                  Shared architectural rules
+│   ├── backend-go-project-layout     Feature-first layout, import cycles
+│   ├── backend-go-code-style         Readability, naming, boundaries
+│   ├── backend-go-performance        Profiling, caching, zero-ser, hot path
+│   ├── backend-go-concurrency        Goroutines, channels, atomics, singleflight
+│   ├── backend-go-observability      Logging, metrics, tracing, profiling, alerting
+│   ├── backend-go-database           Queries, pooling, N+1, migrations
+│   ├── backend-go-testing            Test patterns, integration tests, testify
+│   └── ... 22 more Go skills
+│
+├── frontend          3 skills — UI architecture + frameworks
+│   ├── frontend-core                 Shared UI architecture
+│   ├── frontend-react                React patterns
+│   └── frontend-vue                  Vue patterns
+│
+└── engineering        2 skills — stack-agnostic process
+    ├── engineering-rest-api-design            API contracts
+    └── engineering-perf-optimization-process  Five gates, escalation ladder,
+                                              quality gates, eval test cases
+```
+
+### Routing guide
+
+```text
+"How should I structure this service?"     → backend-core
+"How do I organize Go packages?"           → backend-go-project-layout
+"This endpoint is slow"                    → engineering-perf-optimization-process
+                                             (then backend-go-performance for Go fixes)
+"Add metrics to this handler"              → backend-go-observability
+"Design a REST API"                        → engineering-rest-api-design
+"Review this concurrent code"              → backend-go-concurrency
+```
+
+## Repo layout
+
+```text
+kit.manifest.json                    Root manifest (lists all packs)
 packs/
   backend/
-    pack.manifest.json
+    pack.manifest.json               Pack manifest (lists all skills)
     pack-quickstart.md
     skills/domain/
+      backend-core/SKILL.md          Skill definition + references/
+      backend-go-*/SKILL.md
   frontend/
     pack.manifest.json
     pack-quickstart.md
@@ -155,16 +176,10 @@ packs/
   engineering/
     pack.manifest.json
     pack-quickstart.md
-```
-
-## Install
-
-```bash
-/plugin marketplace add jimmy-skills@jimmy-skills
+    skills/domain/
 ```
 
 ## Notes
 
 - Cross-skill references use `jimmy-skills@<skill-name>`.
-- Legacy publisher metadata and automation are intentionally removed.
 - Upstream references are kept only where they still add concrete value.
