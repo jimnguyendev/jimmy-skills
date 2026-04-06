@@ -83,6 +83,35 @@ If two features need each other:
 
 Import cycles are treated as a boundary problem, not as a tooling annoyance.
 
+### 6. Constrain before you optimize
+
+AI can produce thousands of lines of optimized code per day. Without engineering constraints, that code creates systems harder to understand, debug, and operate than the "slow" version it replaced.
+
+The gap between a casual request ("make it high performance") and an engineering specification (concrete latency targets, CPU budgets, profiling proof, rollback plans) is not a typing problem. It is a judgment problem. Skills in this repo encode that judgment.
+
+**Rules:**
+
+- No optimization without measurable targets. "Make it faster" must become "p95 < 80ms at 2,500 RPS."
+- No optimization without profiling proof. Intuition about bottlenecks is wrong ~80% of the time.
+- Every optimization follows an escalation ladder: fix the query, then add cache, then add L1, then add stampede protection. Each step requires metric proof before escalating to the next.
+- Every optimization must be independently reversible via feature flags.
+- Every optimization PR includes before/after load test numbers and a rollback plan.
+
+### 7. Enforce correctness with quality gates
+
+AI optimizes for "task done." Engineering optimizes for "still works next month, under load, with new features, and with other people touching it."
+
+Without quality gates, the codebase grows faster than your ability to understand, secure, and run it. Nothing goes in just because it "works on my machine" or because the AI sounded confident.
+
+**Minimum gates for every change:**
+
+- CI pipeline on every pull request: formatting, linting, type checking, test suite. No merge if red.
+- Integration tests for critical paths: auth, permissions, data integrity, money flows, external API contracts. These catch spaghetti behavior even when unit tests pass.
+- Security automation: dependency scanning, secret scanning, SAST. No string-built SQL, no unsanitized HTML, no logging secrets, no "temporary" admin bypasses. Boring rules scale better than heroic review.
+- Load test proof for performance changes: dataset matching production cardinality, before/after numbers, flamegraph comparison.
+
+The system must force correctness. The easiest way is to make the computer reject bad changes automatically.
+
 ## Packs
 
 ### Backend
@@ -105,7 +134,10 @@ The frontend pack is intentionally lighter right now.
 
 ### Engineering
 
-The engineering pack is reserved for stack-agnostic delivery and review workflows.
+The engineering pack covers stack-agnostic delivery, review workflows, and constraint-driven process.
+
+- `engineering-rest-api-design` for API contract design
+- `engineering-perf-optimization-process` for constraint-driven performance work: five gates (targets, hot path, profiling, escalation ladder, rollback), quality gate enforcement, and validation requirements. Prevents over-engineering by requiring metric proof before applying any optimization pattern.
 
 ## Layout
 

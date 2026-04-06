@@ -92,6 +92,98 @@ func isRunning() bool {
 
 Go 1.19+ provides typed atomics (`atomic.Int64`, `atomic.Bool`, `atomic.Pointer[T]`) — prefer these over raw `atomic.AddInt64`/`atomic.LoadInt64`.
 
+### High-Throughput Atomic Patterns
+
+These patterns apply when profiling shows mutex contention on the hot path at high throughput (>10K req/s). Do not apply them preemptively — the basic patterns above are sufficient for most workloads.
+
+**Lock-free pop with atomic increment:** When multiple goroutines need to claim the next item from a pre-filled buffer, `atomic.AddInt64` returns a unique index per goroutine without any lock:
+
+```go
+type ItemStore struct {
+    Items      []atomic.Value // Pre-filled with data
+    CurrentIdx int64          // Atomic pop index
+    Total      int64          // Total items loaded
+}
+
+// Pop — lock-free, zero allocation, O(1)
+func (s *ItemStore) Pop() (any, bool) {
+    idx := atomic.AddInt64(&s.CurrentIdx, 1) - 1
+    size := atomic.LoadInt64(&s.Total)
+    if idx >= size {
+        return nil, false
+    }
+    val := s.Items[idx].Load()
+    s.Items[idx].Store(nil) // Clear slot for GC
+    return val, val != nil
+}
+```
+
+Each goroutine gets a unique `idx` — no mutex, no contention. The GC slot clearing prevents consumed items from accumulating in memory.
+
+**Batch counter updates to reduce contention:** At extreme throughput, even `atomic.AddInt64` on a shared counter creates cache-line bouncing. Batch updates reduce contention from N to N/batchSize:
+
+```go
+localCount := int64(0)
+for {
+    doWork()
+    localCount++
+    if localCount%1000 == 0 {
+        atomic.AddInt64(&globalCount, localCount)
+        localCount = 0
+    }
+}
+// Flush remaining on exit
+atomic.AddInt64(&globalCount, localCount)
+```
+
+**Exactly-once shutdown with CompareAndSwap:** Ensures `Close()` runs cleanup exactly once even when called from multiple goroutines:
+
+```go
+type Service struct {
+    closed int32
+}
+
+func (s *Service) Close() error {
+    if !atomic.CompareAndSwapInt32(&s.closed, 0, 1) {
+        return nil // Already closed
+    }
+    // Cleanup runs exactly once
+    return s.release()
+}
+
+func (s *Service) Do() error {
+    if atomic.LoadInt32(&s.closed) != 0 {
+        return ErrClosed // Zero-cost check on hot path
+    }
+    // ...
+}
+```
+
+**Lazy allocation with double-check:** Delay expensive buffer allocation until first use. The `atomic.LoadInt32` fast path avoids lock acquisition on every access:
+
+```go
+type LazyBuffer struct {
+    data      []byte
+    allocated int32
+    mu        sync.Mutex
+}
+
+func (b *LazyBuffer) EnsureAllocated(size int) {
+    if atomic.LoadInt32(&b.allocated) == 1 {
+        return // Fast path: already allocated, no lock
+    }
+    b.mu.Lock()
+    defer b.mu.Unlock()
+    if b.allocated == 1 {
+        return // Double-check under lock
+    }
+    b.data = make([]byte, size)
+    atomic.StoreInt32(&b.allocated, 1)
+}
+```
+
+→ See `jimmy-skills@engineering-perf-optimization-process` for when these patterns are justified (step 6 of the escalation ladder).
+
 ## sync.Map
 
 SHOULD only be used for write-once/read-many patterns. Optimized for two common patterns: (1) keys are written once and read many times, (2) multiple goroutines read/write disjoint key sets. For other patterns, a plain `map` + `sync.RWMutex` is faster.

@@ -181,3 +181,170 @@ func FromSlicePtr(items []*T) []T {
     return result
 }
 ```
+
+## Two-Level Cache (L1 In-Process + L2 Redis)
+
+**Diagnose:** 1- Distributed tracing or `fgprof` — if Redis round-trip (typically 1-3ms) dominates p99 despite high cache hit rate, an in-process L1 eliminates network hops for hot keys 2- `go tool pprof` (goroutine profile) — many goroutines blocked on Redis calls signals that Redis is the bottleneck, not the computation
+
+When a single Redis cache layer is not enough because the network round-trip itself is the bottleneck, add an in-process L1 cache in front of Redis.
+
+```
+Read path:
+  L1 (in-process, ~100ns) → HIT → return
+  L1 MISS → singleflight.Do(key) → L2 (Redis, ~1-3ms) → populate L1 → return
+
+Write path:
+  Set L1 → serialize → Set L2 → publish invalidation via pub/sub
+  Other pods: receive event → update or delete from their L1
+```
+
+### Implementation pattern
+
+```go
+type SyncedCache struct {
+    local   LocalCache          // L1: in-process (LRU or LFU)
+    store   RemoteStore         // L2: Redis
+    sync    Synchronizer        // Redis Pub/Sub for cross-pod invalidation
+    sfGroup singleflight.Group  // Stampede protection on cache miss
+}
+
+func (sc *SyncedCache) Get(ctx context.Context, key string) (any, bool) {
+    // L1 check — ~100ns, no network
+    if val, ok := sc.local.Get(key); ok {
+        return val, true
+    }
+
+    // L2 check — deduplicated via singleflight
+    result, _, _ := sc.sfGroup.Do(key, func() (any, error) {
+        // Double-check L1 (another goroutine may have populated it)
+        if val, ok := sc.local.Get(key); ok {
+            return val, nil
+        }
+        data, err := sc.store.Get(ctx, key)
+        if err != nil {
+            return nil, nil
+        }
+        var val any
+        json.Unmarshal(data, &val)
+        sc.local.Set(key, val, 1) // populate L1
+        return val, nil
+    })
+    return result, result != nil
+}
+```
+
+### Stale write-back prevention
+
+In read-heavy architectures with separate reader and writer pods, reader pods should NOT write back to Redis from L1. A reader may hold stale L1 data and overwrite fresher data in Redis.
+
+```go
+type Options struct {
+    // When false (default), reader pods skip Redis writes.
+    // Only writer pods should write to Redis.
+    ReaderCanSetToRedis bool
+}
+```
+
+### Cross-pod invalidation
+
+Use Redis Pub/Sub to notify other pods when data changes. Two modes:
+
+| Mode | Payload | Other pods action | Best for |
+|---|---|---|---|
+| Set (propagate) | Full serialized value | Store in L1 directly | Small values, read-heavy |
+| Invalidate | Key only | Delete from L1, lazy-load on next read | Large values |
+
+Self-invalidation prevention: each event carries a `SenderPodID`. Pods ignore events they sent themselves.
+
+### When to use two-level cache
+
+- Redis hit rate is already >90% but Redis round-trip dominates p99
+- Read-heavy workload with predictable hot keys
+- Multiple pods serve the same data
+
+### When NOT to use
+
+- Single-instance deployment (no cross-pod sync needed — just use in-process cache)
+- Write-heavy workload (invalidation storms negate L1 benefit)
+- Data changes every request (L1 cache will always be stale)
+
+→ See `jimmy-skills@engineering-perf-optimization-process` for the escalation ladder that determines when to add L1 cache.
+
+## Zero-Serialization Read Path
+
+**Diagnose:** `go tool pprof` (CPU profile) — if `json.Marshal` or `json.Unmarshal` appears in the top 10 functions on the hot path, consuming >10% of CPU, zero-serialization eliminates that cost.
+
+The traditional cache read path marshals and unmarshals on every request:
+
+```
+Redis → []byte → Unmarshal → Object → Marshal → []byte → HTTP Response
+```
+
+When the response format matches the storage format (JSON in, JSON out), skip the round-trip:
+
+```
+L1 Cache → []byte → HTTP Response (direct write)
+```
+
+### Implementation pattern
+
+Pre-process data when it arrives via pub/sub, not on every read:
+
+```go
+// CachedPost stores pre-processed data for zero-cost reads
+type CachedPost struct {
+    Hash string   // Pre-extracted for ETag/HTTP 304
+    Data []byte   // Raw JSON bytes — serve directly to HTTP response
+}
+
+// OnSetLocalCache callback: parse ONCE when data arrives, not on every read
+cfg.OnSetLocalCache = func(event InvalidationEvent) any {
+    post, err := parsePost(event.Value)
+    if err != nil {
+        return nil
+    }
+    return &CachedPost{
+        Hash: post.Hash,
+        Data: event.Value, // Keep raw bytes for direct response
+    }
+}
+```
+
+```go
+// Handler: zero-cost read — no marshal, no unmarshal, no allocation
+func handleGetPost(w http.ResponseWriter, r *http.Request) {
+    val, found := cache.Get(ctx, postID)
+    if !found {
+        http.Error(w, "not found", 404)
+        return
+    }
+    cached := val.(*CachedPost)
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(cached.Data) // Direct byte write
+}
+```
+
+### Benchmark evidence
+
+On Apple M3 Pro (11 cores), 4 threads, 400 connections, 10s duration:
+
+| Endpoint | Req/sec | P50 | P99 |
+|---|---|---|---|
+| Zero-serialization (L1 → raw bytes) | **74,720** | **4.98ms** | **12.50ms** |
+| L1 + re-marshal every request | 71,891 | 5.16ms | 14.40ms |
+| Direct Redis (no L1) | 51,807 | 7.01ms | 27.26ms |
+
+44% throughput gain over Redis direct. 2.1x lower P99 latency.
+
+### When to use
+
+- Read-heavy API (>>writes)
+- Response format matches storage format
+- CPU profile shows marshal/unmarshal in hot path (>10% CPU)
+- Hot data served from L1 cache
+
+### When NOT to use
+
+- Response format differs from storage format (transformation needed anyway)
+- Write-heavy API (data changes frequently, pre-processing waste)
+- CPU is not the bottleneck (I/O or DB is)

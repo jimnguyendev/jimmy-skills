@@ -1,0 +1,67 @@
+{
+  "skill_name": "engineering-perf-optimization-process",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Make my Go API faster. It's handling blog posts and feels slow.",
+      "expected_output": "The agent should NOT start writing optimization code. It should ask for concrete targets (latency, throughput, error budget), identify the hot path, and request profiling data before proposing any changes.",
+      "assertions": [
+        "The agent asks for measurable performance targets before proposing solutions",
+        "The agent asks which endpoints account for the majority of traffic",
+        "The agent does NOT add caching, singleflight, or any optimization code",
+        "The agent recommends profiling or measuring baseline before any optimization",
+        "The response mentions the need for a rollback plan or feature flag"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We need to add a two-level cache with Redis L2 and in-process L1, plus singleflight for stampede protection, and zero-serialization reads to our user feed endpoint.",
+      "expected_output": "The agent should push back on applying all three at once. It should ask about current latency numbers, whether profiling shows Redis round-trip or CPU as the bottleneck, and suggest starting with the simplest sufficient solution from the escalation ladder.",
+      "assertions": [
+        "The agent does NOT immediately implement all three optimizations",
+        "The agent asks for profiling data or current latency numbers",
+        "The agent references the escalation ladder or suggests starting with a simpler approach first",
+        "The agent mentions that each optimization should have metric proof before escalating",
+        "The agent asks about the current throughput or RPS to gauge whether L1 and zero-ser are actually needed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our API handles 2,500 RPS. p95 is 240ms, target is under 80ms. Profiling shows 60% of p99 time is in database queries (N+1 pattern in feed endpoint). The feed endpoint accounts for 88% of traffic. We need to fix this.",
+      "expected_output": "The agent should propose fixing the N+1 query first (step 1 of escalation ladder) since profiling clearly identifies the bottleneck. It should NOT jump to caching or advanced patterns. It should include a load test plan to verify the fix.",
+      "files": [],
+      "assertions": [
+        "The agent proposes fixing the N+1 query as the primary solution",
+        "The agent suggests batched queries (e.g., WHERE id = ANY($1)) or joins to replace per-item fetches",
+        "The agent does NOT propose caching or L1/L2 as the first solution",
+        "The agent mentions verifying improvement with load testing or benchmarks",
+        "The agent suggests adding or checking database indexes",
+        "The response includes a rollback consideration or feature flag mention"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I optimized our cache layer. Here's the PR: added in-process LRU cache, singleflight, and switched to msgpack serialization. All in one commit. Tests pass. Can you review?",
+      "expected_output": "The agent should flag that three optimizations are bundled in one PR without independent rollback. It should ask for before/after load test numbers, profiling evidence that each optimization was necessary, and recommend splitting into separate PRs with feature flags.",
+      "assertions": [
+        "The agent identifies that multiple optimizations are bundled together",
+        "The agent recommends splitting into separate PRs or adding independent feature flags",
+        "The agent asks for before/after load test numbers or benchmark results",
+        "The agent asks for profiling evidence showing each optimization was needed",
+        "The agent mentions the difficulty of isolating regressions when changes are bundled"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "We're building a new microservice for product catalog. Expected traffic is around 200 RPS initially, growing to maybe 1,000 RPS in 6 months. Should we design it with L1+L2 cache, singleflight, and circuit breakers from the start?",
+      "expected_output": "The agent should advise against premature optimization. At 200-1,000 RPS, a properly indexed database and possibly a single Redis cache layer is likely sufficient. It should recommend starting simple, instrumenting with observability, and adding complexity only when metrics show it's needed.",
+      "assertions": [
+        "The agent advises against implementing all three from the start",
+        "The agent mentions that 200-1,000 RPS likely does not require L1 cache or singleflight",
+        "The agent recommends starting with proper database indexing and possibly a single cache layer",
+        "The agent recommends setting up observability/monitoring first",
+        "The agent suggests adding optimizations later when metrics justify them"
+      ]
+    }
+  ]
+}

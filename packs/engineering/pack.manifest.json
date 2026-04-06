@@ -1,7 +1,7 @@
 {
   "name": "engineering",
-  "version": "1.1.0",
-  "description": "Shared engineering workflow pack for planning, review, and delivery conventions across stacks.",
+  "version": "1.2.0",
+  "description": "Shared engineering workflow pack for planning, review, delivery conventions, and constraint-driven optimization across stacks.",
   "capabilities": {
     "toolAdapters": [],
     "skills": {
@@ -9,6 +9,10 @@
         {
           "id": "engineering-rest-api-design",
           "path": "packs/engineering/skills/domain/engineering-rest-api-design/SKILL.md"
+        },
+        {
+          "id": "engineering-perf-optimization-process",
+          "path": "packs/engineering/skills/domain/engineering-perf-optimization-process/SKILL.md"
         }
       ],
       "process": []

@@ -25,7 +25,9 @@
         // No language for code blocks: disable (common for prose/READMEs)
         "MD040": false,
         // Blank lines around fences: disable (common for prose/READMEs)
-        "MD041": false
+        "MD041": false,
+        // Table column style: disable (compact tables used throughout)
+        "MD060": false
     },
     // Custom rules (npm packages or local .js)
     "customRules": [],
