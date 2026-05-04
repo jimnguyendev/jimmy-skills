@@ -1,0 +1,36 @@
+{
+  "skill_name": "outcome-thinking",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My team keeps getting asked to ship features faster, but leadership cannot explain what value those features will create. How should I reframe this conversation?",
+      "expected_output": "A response that separates output, outcome, and impact, then asks for the human behavior change that should drive the business result.",
+      "files": [],
+      "expectations": [
+        "Separates output from outcome and impact",
+        "Asks for or defines the behavior change that matters",
+        "Does not treat feature delivery itself as success"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our OKR draft says 'Launch new onboarding flow by Q3'. Why is that weak, and how should we rewrite it?",
+      "expected_output": "A response that explains why the draft is output-based and suggests a behavior-based key result instead.",
+      "files": [],
+      "expectations": [
+        "Identifies the draft as output-based",
+        "Suggests a measurable behavior-based alternative"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We think a visible streak counter will improve retention, but we do not have proof. How should we structure that idea?",
+      "expected_output": "A response that turns the assumption into a hypothesis and recommends a small experiment or MVP.",
+      "files": [],
+      "expectations": [
+        "Frames the idea as a hypothesis",
+        "Recommends a small test rather than immediate full rollout"
+      ]
+    }
+  ]
+}

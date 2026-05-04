@@ -1,0 +1,80 @@
+{
+  "skill_name": "engineering-design-thinking",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We need to add scheduled invoice reminders to our SaaS app. This will touch the billing service, email delivery, user notification preferences, and a new retry policy for failed sends. Can you implement it?",
+      "expected_output": "The agent should NOT start implementation. It should run the five-gate design process, clarify the problem and constraints, and produce a design brief for approval before any code is written.",
+      "files": [],
+      "assertions": [
+        "The agent does NOT start writing implementation code immediately",
+        "The agent frames the problem before discussing implementation details",
+        "The agent asks or states relevant constraints such as delivery timing, retries, user preferences, and failure handling",
+        "The agent identifies that the feature is non-trivial because it spans multiple files or concerns",
+        "The agent produces or promises a design brief before implementation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/design We want to add organization-level SSO to our product. This will affect login flow, user provisioning, account linking, and admin settings. Please think it through first.",
+      "expected_output": "The agent should explicitly run the full design flow, covering problem framing, context, options, architecture, and routing, then end with a structured design brief instead of code.",
+      "files": [],
+      "assertions": [
+        "The response covers problem framing rather than jumping straight to SAML or OIDC implementation details",
+        "The response includes context analysis such as current auth flow, provisioning behavior, and deployment constraints",
+        "The response evaluates at least two distinct approaches or integration options",
+        "The response includes an architecture sketch with boundaries, data flow, or failure modes",
+        "The response includes an ordered skill-routing or implementation sequence",
+        "The response ends with a design brief or approval checkpoint before implementation"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review this design for a new Redis cache layer in our checkout service. The proposal says: 'Add Redis in front of every database call so checkout is faster. Engineering will figure out invalidation during implementation.'",
+      "expected_output": "The agent should switch to review mode, evaluate the proposal against the gates, and flag what is missing instead of accepting the design at face value.",
+      "files": [],
+      "assertions": [
+        "The agent identifies missing problem framing such as unclear targets or unclear user-facing outcome",
+        "The agent flags missing context analysis such as current bottlenecks or existing data flow",
+        "The agent notes that solution evaluation is incomplete because only one approach is presented",
+        "The agent flags architecture risk around cache invalidation, coupling, or failure modes",
+        "The agent does NOT approve the design as sufficient without additional gate evidence"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "What's the scope of adding audit logs for admin actions across our API, background jobs, and internal dashboard? I need to know what to investigate first.",
+      "expected_output": "The agent should run in scope mode and return a prioritized checklist, highlighting the gates that deserve the most attention rather than producing a full implementation plan.",
+      "files": [],
+      "assertions": [
+        "The response is framed as scope analysis or a prioritized checklist",
+        "The response identifies cross-cutting concerns such as API paths, async jobs, retention, and who consumes the logs",
+        "The response highlights which gates need the most attention, such as context and architecture",
+        "The agent does NOT jump into code or detailed implementation steps"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Should we build our new multi-tenant reporting feature by adding tenant_id everywhere in the current service, or by extracting a separate reporting pipeline and store?",
+      "expected_output": "The agent should evaluate multiple approaches using trade-offs and ideality, not anchor on the first option or choose based on novelty alone.",
+      "files": [],
+      "assertions": [
+        "The agent compares at least two distinct approaches",
+        "The agent discusses benefits, resource costs, and harmful effects or operational burden",
+        "The agent treats hidden coupling or maintenance cost as part of the decision",
+        "The agent chooses an approach with explicit rationale instead of saying 'it depends' without analysis"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "How do I parse JSON into a struct in Go?",
+      "expected_output": "The agent should recognize this as a single implementation question and avoid forcing the full five-gate design workflow.",
+      "files": [],
+      "assertions": [
+        "The agent does NOT run the full design-thinking process for this simple question",
+        "The agent does NOT produce a five-gate design brief",
+        "The agent answers directly or routes to a more appropriate implementation skill"
+      ]
+    }
+  ]
+}

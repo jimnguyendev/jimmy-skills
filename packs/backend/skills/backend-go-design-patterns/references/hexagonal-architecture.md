@@ -1,0 +1,190 @@
+# Hexagonal Architecture (Ports & Adapters) in Go
+
+## When to Use
+
+Apply hexagonal architecture when a service interacts with multiple external systems (databases, APIs, message queues, caches) and you want the domain logic fully decoupled from all of them. Particularly effective when the same business logic needs multiple entry points (HTTP, gRPC, CLI, message consumer). Do NOT use for simple CRUD apps or libraries.
+
+Hexagonal architecture is an escalation path, not the default. Preserve feature-first locality even when introducing ports and adapters, and keep them inside the feature slice unless there is a strong reason not to.
+
+## Core Concepts
+
+- **Domain** — Business logic and types. No external dependencies.
+- **Ports** — Interfaces that define how the domain interacts with the outside world.
+  - **Primary (driving) ports**: How the outside world calls into the domain (e.g., `OrderService` interface).
+  - **Secondary (driven) ports**: How the domain calls out to infrastructure (e.g., `OrderRepository`, `PaymentGateway` interfaces).
+- **Adapters** — Concrete implementations of ports.
+  - **Primary adapters**: HTTP handlers, gRPC servers, CLI commands — they call primary ports.
+  - **Secondary adapters**: PostgreSQL repository, Stripe client, Redis cache — they implement secondary ports.
+
+## Project Structure
+
+Prefer a vertical slice per feature, with ports and adapters living inside that slice where practical.
+
+```
+order-service/
+├── cmd/
+│   ├── server/
+│   │   └── main.go                  # HTTP server wiring
+│   └── worker/
+│       └── main.go                  # Message consumer wiring
+├── internal/
+│   ├── order/
+│   │   ├── domain.go               # Order entity + business rules
+│   │   ├── incoming.go             # Primary ports
+│   │   ├── outgoing.go             # Secondary ports
+│   │   ├── service.go              # Implements primary ports
+│   │   ├── http_handler.go         # HTTP adapter
+│   │   ├── grpc_server.go          # gRPC adapter
+│   │   ├── postgres_repo.go        # Secondary adapter
+│   │   └── stripe_payment.go       # Secondary adapter
+│   └── platform/
+│       └── router.go
+├── go.mod
+└── go.sum
+```
+
+## Code Examples
+
+### Domain — pure business logic
+
+```go
+// internal/order/domain.go
+package order
+
+type Order struct {
+    ID     string
+    Items  []Item
+    Status OrderStatus
+}
+
+func (o *Order) Ship() error {
+    if o.Status != StatusPaid {
+        return ErrOrderNotPaid
+    }
+    o.Status = StatusShipped
+    return nil
+}
+```
+
+### Ports — interfaces defined separately from implementations
+
+```go
+// internal/order/incoming.go
+package order
+
+// Primary port — how the outside world drives the application
+type OrderService interface {
+    PlaceOrder(ctx context.Context, items []Item) (string, error)
+    ShipOrder(ctx context.Context, orderID string) error
+    GetOrder(ctx context.Context, orderID string) (*Order, error)
+}
+```
+
+```go
+// internal/order/outgoing.go
+package order
+
+// Secondary ports — how the application reaches external systems
+type OrderRepository interface {
+    Save(ctx context.Context, order *Order) error
+    FindByID(ctx context.Context, id string) (*Order, error)
+}
+
+type PaymentGateway interface {
+    Charge(ctx context.Context, orderID string, amount int64) error
+}
+```
+
+### Service — implements primary port, depends on secondary ports
+
+```go
+// internal/order/service.go
+package order
+
+type orderService struct {
+    orders   OrderRepository
+    payments PaymentGateway
+}
+
+func NewOrderService(orders OrderRepository, payments PaymentGateway) OrderService {
+    return &orderService{orders: orders, payments: payments}
+}
+
+func (s *orderService) PlaceOrder(ctx context.Context, items []Item) (string, error) {
+    order := NewOrder(items)
+
+    if err := s.payments.Charge(ctx, order.ID, order.Total()); err != nil {
+        return "", fmt.Errorf("charging payment: %w", err)
+    }
+
+    if err := s.orders.Save(ctx, order); err != nil {
+        return "", fmt.Errorf("saving order: %w", err)
+    }
+
+    return order.ID, nil
+}
+```
+
+### Primary Adapter — HTTP handler calls the service port
+
+```go
+// internal/order/http_handler.go
+package order
+
+type OrderHandler struct {
+    svc OrderService
+}
+
+func NewOrderHandler(svc OrderService) *OrderHandler {
+    return &OrderHandler{svc: svc}
+}
+
+func (h *OrderHandler) HandlePlaceOrder(w http.ResponseWriter, r *http.Request) {
+    var req PlaceOrderRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, "invalid request", http.StatusBadRequest)
+        return
+    }
+
+    id, err := h.svc.PlaceOrder(r.Context(), req.Items)
+    if err != nil {
+        http.Error(w, err.Error(), mapToHTTPStatus(err))
+        return
+    }
+
+    json.NewEncoder(w).Encode(map[string]string{"id": id})
+}
+```
+
+### Secondary Adapter — implements a driven port
+
+```go
+// internal/order/postgres_repo.go
+package order
+
+type OrderRepo struct {
+    db *sql.DB
+}
+
+func NewOrderRepo(db *sql.DB) *OrderRepo {
+    return &OrderRepo{db: db}
+}
+
+func (r *OrderRepo) Save(ctx context.Context, order *Order) error {
+    // SQL upsert
+}
+
+func (r *OrderRepo) FindByID(ctx context.Context, id string) (*Order, error) {
+    // SQL query
+}
+```
+
+## Multiple Entry Points
+
+The hexagonal approach shines when the same `OrderService` is called from different primary adapters — HTTP for external clients, gRPC for internal services, a message consumer for async events. Each adapter is wired in its own `cmd/` entry point.
+
+If you only have one entry point and one datastore, this pattern may be unnecessary. Do not create ports/adapters just to look “clean”.
+
+## Wiring
+
+Construct adapters and inject them in `cmd/server/main.go`.

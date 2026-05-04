@@ -1,0 +1,65 @@
+{
+  "name": "jimmy-skills",
+  "owner": {
+    "name": "Jim Nguyen",
+    "email": "jimnguyendev@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Opinionated skill kit that teaches AI agents how experienced engineers build software",
+    "version": "1.5.0"
+  },
+  "plugins": [
+    {
+      "name": "backend",
+      "source": "./packs/backend",
+      "description": "Backend architecture + Go implementation skills (31 skills)",
+      "version": "1.3.0",
+      "author": {
+        "name": "Jim Nguyen"
+      },
+      "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+      "license": "MIT",
+      "keywords": ["backend", "go", "golang", "architecture"],
+      "category": "development"
+    },
+    {
+      "name": "engineering",
+      "source": "./packs/engineering",
+      "description": "Stack-agnostic engineering process — design thinking, API design, perf optimization (3 skills)",
+      "version": "1.3.0",
+      "author": {
+        "name": "Jim Nguyen"
+      },
+      "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+      "license": "MIT",
+      "keywords": ["engineering", "design-thinking", "api-design", "performance"],
+      "category": "development"
+    },
+    {
+      "name": "data-engineer",
+      "source": "./packs/data-engineer",
+      "description": "Data platform, stack delivery, quality, observability, and data program leadership skills (8 skills)",
+      "version": "1.1.0",
+      "author": {
+        "name": "Jim Nguyen"
+      },
+      "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+      "license": "MIT",
+      "keywords": ["data", "analytics", "warehouse", "quality", "observability"],
+      "category": "development"
+    },
+    {
+      "name": "outcomes",
+      "source": "./packs/outcomes",
+      "description": "Outcome thinking, planning, operating model, and transformation skills (4 skills)",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jim Nguyen"
+      },
+      "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+      "license": "MIT",
+      "keywords": ["outcomes", "okr", "planning", "operating-model", "transformation"],
+      "category": "development"
+    }
+  ]
+}

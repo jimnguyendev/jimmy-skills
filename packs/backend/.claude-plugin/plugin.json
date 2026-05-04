@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "description": "Backend architecture + Go implementation skills (31 skills)",
+  "version": "1.5.0",
+  "author": {
+    "name": "Jim Nguyen",
+    "email": "jimnguyendev@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+  "repository": "https://github.com/jimnguyendev/jimmy-skills",
+  "license": "MIT",
+  "keywords": ["backend", "go", "golang", "architecture", "skills"],
+  "skills": "./skills/"
+}

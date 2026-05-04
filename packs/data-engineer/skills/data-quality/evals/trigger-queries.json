@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Help me design dbt tests so a mart only publishes when row counts and core metrics look sane.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our analytics schema keeps drifting and downstream dashboards break. What contract checks should we add?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I stop metric drift when multiple teams share the same KPI definition?",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you build a Grafana panel for pipeline freshness alerts?",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a SQL query to count NULLs by day.",
+    "should_trigger": false
+  },
+  {
+    "query": "Should we use Kafka or SQS for events?",
+    "should_trigger": false
+  }
+]

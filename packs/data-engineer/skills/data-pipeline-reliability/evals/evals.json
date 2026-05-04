@@ -1,0 +1,36 @@
+{
+  "skill_name": "data-pipeline-reliability",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We rerun a daily batch that rebuilds one day of analytics data. Right now the job does DELETE plus INSERT and gets slower every week. What idempotent write pattern should we switch to?",
+      "expected_output": "A recommendation to use partition-level overwrite or metadata-level replacement instead of row-by-row deletes, with reasoning about reruns and granularity.",
+      "files": [],
+      "expectations": [
+        "Recommends overwrite or metadata-level replacement for a full daily rebuild",
+        "Explains why row-by-row deletes are a poor default here",
+        "Mentions partition granularity or backfill trade-offs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our incremental CDC merge works on normal days, but when we backfill an earlier run the target ends up mixing old and future data. What pattern are we missing?",
+      "expected_output": "A response that identifies the replay inconsistency problem and recommends a stateful merger or version-restore approach.",
+      "files": [],
+      "expectations": [
+        "Recognizes that a plain merge is insufficient for backfill consistency",
+        "Recommends state restore, version tracking, or stateful merger logic"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We generate session records from a stream and retries occasionally duplicate them. How should we choose an idempotent session key?",
+      "expected_output": "A response that prefers deterministic keys from immutable attributes and avoids mutable event-time-derived keys when late data exists.",
+      "files": [],
+      "expectations": [
+        "Uses deterministic keys from immutable attributes",
+        "Warns against event time as the primary idempotency key when late data exists"
+      ]
+    }
+  ]
+}

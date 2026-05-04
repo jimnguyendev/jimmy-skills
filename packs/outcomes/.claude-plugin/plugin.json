@@ -1,0 +1,14 @@
+{
+  "name": "outcomes",
+  "description": "Outcome thinking, planning, operating model, and transformation skills (4 skills)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Jim Nguyen",
+    "email": "jimnguyendev@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+  "repository": "https://github.com/jimnguyendev/jimmy-skills",
+  "license": "MIT",
+  "keywords": ["outcomes", "okr", "planning", "operating-model", "transformation", "skills"],
+  "skills": "./skills/"
+}

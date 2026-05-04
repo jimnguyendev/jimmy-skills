@@ -1,0 +1,106 @@
+{
+  "skill_name": "kafka-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're building an IoT platform that ingests about 50K events/sec from sensors. Each event is roughly 500 bytes. How many Kafka partitions should we start with?",
+      "expected_output": "A concrete partition count recommendation based on the write throughput formula (QPS × message size / throughput per partition), with the reasoning shown. Formula yields ~3 partitions (25 MB/s ÷ 10 MB/s), but should recommend 4-8 partitions accounting for growth headroom and divisibility, since partitions can only be increased, never decreased.",
+      "assertions": [
+        "Uses the formula: Partitions = Expected Throughput / Throughput per Partition",
+        "Calculates expected throughput from 50K events/s × 500 bytes = 25 MB/s",
+        "References 10 MB/s as the write throughput per partition benchmark",
+        "Recommends a number accounting for growth headroom (e.g. 4-8)",
+        "Mentions that partitions should be a divisible number",
+        "Warns about the one-way nature of partition count increases"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our service processes orders: it saves the order to PostgreSQL and then publishes an OrderCreated event to Kafka. Sometimes the Kafka publish fails after the DB commit. How do we fix this?",
+      "expected_output": "Identifies this as a separate dual-write problem. Explains why wrapping in a DB transaction doesn't work. Recommends the Transactional Outbox Pattern with Debezium CDC. Includes the outbox table structure and warns about at-least-once delivery.",
+      "assertions": [
+        "Identifies the scenario as a separate dual-write problem",
+        "Explains why DB transactions cannot span both PostgreSQL and Kafka",
+        "Recommends the Transactional Outbox Pattern",
+        "Describes the outbox table schema or structure",
+        "Mentions Debezium and/or CDC as the mechanism to read the outbox",
+        "Warns that downstream consumers must be idempotent"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We have a Kafka consumer that processes ML inference jobs — each message takes 3-8 minutes to process. Consumers keep getting kicked out of the group with rebalance errors. What's going on and how do we fix it?",
+      "expected_output": "Explains that the consumer exceeds max.poll.interval.ms (default 5 min), causing Kafka to consider it dead and trigger rebalance. Presents liveness tuning as a quick fix but recommends the pipeline pattern as the proper solution for unpredictable long-running tasks.",
+      "assertions": [
+        "Identifies max.poll.interval.ms timeout as the root cause of unexpected rebalances",
+        "Mentions the default values (5 min poll interval, 45s session timeout)",
+        "Describes liveness tuning as a stopgap (decrease max.poll.records, increase timeouts)",
+        "Recommends the pipeline pattern for production use",
+        "Explains how the pipeline breaks the process into shorter stages with separate topics"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "How do I achieve exactly-once processing in Kafka when my consumer writes to a PostgreSQL database?",
+      "expected_output": "Explains that exactly-once = at-least-once + idempotent consumer. Covers producer config (acks=all, retries, idempotence), consumer config (auto-commit, fixed group.id), and the deduplication pattern using a unique constraint on request_id.",
+      "assertions": [
+        "States the formula: Exactly-Once = At-Least-Once + Idempotent Processing",
+        "Covers producer-side settings: acks=all, retries, enable.idempotence",
+        "Covers consumer-side settings: enable.auto.commit, fixed group.id",
+        "Describes the deduplication pattern with unique constraint on message/request ID",
+        "Distinguishes between naturally idempotent operations and deduplication"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "We need to implement a synchronous request-response pattern over Kafka — our API gateway sends a request and needs to wait for the response. We have 3 instances of the gateway. What's the best approach?",
+      "expected_output": "Walks through the progressive solutions: Request-Reply with two topics, Message ID for mapping, Message Pool for coordination. For multi-instance, compares Remote Message Pool (Redis) vs Return Address pattern with trade-offs for each.",
+      "assertions": [
+        "Describes the Request-Reply Pattern with request topic and reply topic",
+        "Explains message_id and original_message_id for request-response mapping",
+        "Addresses the multi-instance problem specifically",
+        "Compares Remote Message Pool (Redis) and Return Address approaches",
+        "Mentions the CompletableFuture / async callback pattern for the message pool",
+        "Recommends packaging the client code as a shared library"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Our service needs to send 5 MB PDF reports through Kafka. The default 1 MB limit is blocking us. What are our options?",
+      "expected_output": "Recommends external storage (S3/GCS) with a URL reference in the Kafka message as the primary approach. Mentions increasing max.message.bytes as an anti-pattern with practical ceiling around 10 MB. Suggests trying compression first for messages near the 1 MB boundary.",
+      "assertions": [
+        "Recommends external storage (S3, GCS, Azure Blob) as the primary solution",
+        "Describes the flow: upload file, send URL in Kafka message, consumer downloads",
+        "Mentions increasing max.message.bytes as an anti-pattern",
+        "Notes the practical ceiling around 10 MB and impact on replication",
+        "Mentions compression (lz4, zstd) as a first line of defense",
+        "Warns about consumer-side fetch.max.bytes adjustment if increasing message size"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Our Kafka consumer lag keeps growing and we're seeing alerts. How should we diagnose and fix this?",
+      "expected_output": "Explains offset lag vs time lag. Recommends identifying the root cause first (slow consumer, producer spikes, partition imbalance). Covers monitoring tools and scaling strategies.",
+      "assertions": [
+        "Distinguishes between offset lag and time lag",
+        "Recommends diagnosing root cause before scaling (slow processing, producer bursts, uneven partitions)",
+        "Mentions monitoring tools (Burrow, Kafka consumer group CLI, or JMX metrics)",
+        "Suggests scaling consumers up to partition count as one remedy",
+        "Notes that consumers in a group cannot exceed partition count"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "We have an order processing system where events for the same order must be processed in sequence. We're using Kafka with 12 partitions. How do we guarantee ordering?",
+      "expected_output": "Recommends using order_id as the message key to route all events for the same order to the same partition. Explains partial vs total order. Covers producer idempotence and max.in.flight.requests.per.connection for retry safety.",
+      "assertions": [
+        "Recommends using order_id as the partition key",
+        "Explains that Kafka guarantees ordering within a partition but not across partitions",
+        "Distinguishes between total order and partial order",
+        "Requires enable.idempotence=true on the producer",
+        "Mentions max.in.flight.requests.per.connection and its interaction with idempotence",
+        "Warns that changing partition count breaks key-to-partition mapping"
+      ]
+    }
+  ]
+}

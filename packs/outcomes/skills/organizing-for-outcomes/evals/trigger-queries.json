@@ -1,0 +1,26 @@
+[
+  {
+    "query": "How should we organize teams around customer outcomes instead of product silos?",
+    "should_trigger": true
+  },
+  {
+    "query": "Our backlog is huge and stakeholders have stopped trusting prioritization. What should we do?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I manage stakeholder expectations when outcome work has fuzzy boundaries?",
+    "should_trigger": true
+  },
+  {
+    "query": "Help me explain the difference between output, outcome, and impact to my team.",
+    "should_trigger": false
+  },
+  {
+    "query": "How do I turn this feature roadmap into an outcome-based plan?",
+    "should_trigger": false
+  },
+  {
+    "query": "How do I treat internal stakeholders like customers during an organizational change?",
+    "should_trigger": false
+  }
+]
