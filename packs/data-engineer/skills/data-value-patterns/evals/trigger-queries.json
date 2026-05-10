@@ -1,0 +1,26 @@
+[
+  {
+    "query": "How should I enrich learning events with user and course metadata before building marts?",
+    "should_trigger": true
+  },
+  {
+    "query": "We need to turn raw events into sessions and aggregates for analytics. Which pattern fits?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should this ClickHouse summary be a local aggregator or a distributed one?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I make a pipeline idempotent during backfills?",
+    "should_trigger": false
+  },
+  {
+    "query": "Compare RDW and lakehouse for our company.",
+    "should_trigger": false
+  },
+  {
+    "query": "Write SQL for a left join.",
+    "should_trigger": false
+  }
+]

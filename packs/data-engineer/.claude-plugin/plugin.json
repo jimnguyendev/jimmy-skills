@@ -1,0 +1,14 @@
+{
+  "name": "data-engineer",
+  "description": "Data platform, stack delivery, quality, observability, and data program leadership skills (8 skills)",
+  "version": "1.1.0",
+  "author": {
+    "name": "Jim Nguyen",
+    "email": "jimnguyendev@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+  "repository": "https://github.com/jimnguyendev/jimmy-skills",
+  "license": "MIT",
+  "keywords": ["data", "analytics", "warehouse", "quality", "observability", "skills"],
+  "skills": "./skills/"
+}

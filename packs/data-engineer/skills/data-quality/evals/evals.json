@@ -1,0 +1,39 @@
+{
+  "skill_name": "data-quality",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our dbt model for `fact_daily_active_users` runs successfully, but leadership says the metric dropped by 40% overnight and nobody changed the product. Suggest the minimum data quality checks we should add before publishing this mart.",
+      "expected_output": "A concrete set of checks covering source readiness or reconciliation, output business-rule tests, and a blocking publish gate for suspicious metric shifts.",
+      "files": [],
+      "expectations": [
+        "Recommends checks beyond pipeline success",
+        "Includes at least one reconciliation or input-readiness check",
+        "Includes output or business-rule validation on the mart",
+        "Differentiates blocking failures from warning-only cases"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We keep getting random NULL values in required analytics columns after upstream schema changes. Should we handle this in dbt tests, warehouse constraints, or both?",
+      "expected_output": "A response that combines storage-layer constraints with pipeline-level tests and explains the trade-offs.",
+      "files": [],
+      "expectations": [
+        "Uses warehouse constraints for hard invariants like NOT NULL where appropriate",
+        "Keeps transformation or mart-level tests in the plan",
+        "Explains why a single layer is insufficient"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Marketing wants to redefine `active_user_7d`, but Learning uses the same metric in quarterly planning. What governance rule should we use so the definition cannot drift silently?",
+      "expected_output": "A recommendation that semantic changes require owner review or approval and that one canonical metric definition should be maintained.",
+      "files": [],
+      "expectations": [
+        "Treats metric-definition changes as a governed change",
+        "Requires owner approval or equivalent review",
+        "Promotes one canonical definition for shared metrics"
+      ]
+    }
+  ]
+}

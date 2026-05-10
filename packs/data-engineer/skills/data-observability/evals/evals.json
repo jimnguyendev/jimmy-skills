@@ -1,0 +1,37 @@
+{
+  "skill_name": "data-observability",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our `mart_course_completion_daily` table says the last pipeline succeeded, but product suspects the data is stale. What should we monitor so this becomes obvious before they ask?",
+      "expected_output": "A monitoring plan that includes last-updated visibility, freshness SLA checks, and at least one completeness or volume signal beyond task success.",
+      "files": [],
+      "expectations": [
+        "Distinguishes pipeline success from dataset freshness",
+        "Includes a `last_updated` or equivalent freshness signal",
+        "Includes a volume, completeness, or interruption detector"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A streaming consumer looks healthy on average, but one partition is far behind and dashboards are wrong. How should we measure lag?",
+      "expected_output": "A recommendation to avoid simple averages and use percentile or worst-case lag with an appropriate lag unit.",
+      "files": [],
+      "expectations": [
+        "Rejects average lag as the primary signal",
+        "Uses percentiles or worst-case lag",
+        "Defines lag in terms of offset, timestamp, watermark, or similar unit"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Yesterday's row-count anomaly caused today's skew alert to fire again, even though the current load is normal. How should we change the alert logic?",
+      "expected_output": "A response that compares against the most recent healthy baseline instead of the immediately previous run.",
+      "files": [],
+      "expectations": [
+        "Explains the alert-loop problem",
+        "Recommends using the last healthy or successful baseline"
+      ]
+    }
+  ]
+}

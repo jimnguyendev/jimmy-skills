@@ -1,0 +1,36 @@
+{
+  "skill_name": "outcomes-based-planning",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our roadmap says 'Launch mobile app by Q2, gamification by Q3, community features by Q4'. How should I rewrite this if I want an outcome-based roadmap instead?",
+      "expected_output": "A response that reframes the roadmap around behavior changes, hypotheses, or planning questions rather than promised features.",
+      "files": [],
+      "expectations": [
+        "Rejects feature-only roadmap framing under uncertainty",
+        "Rewrites the plan around outcomes, questions, or hypotheses"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We want to improve NPS, but that feels too vague. What practical planning method should we use?",
+      "expected_output": "A response that breaks impact into smaller outcomes and recommends customer journey mapping with boosters and blockers.",
+      "files": [],
+      "expectations": [
+        "Treats NPS as impact rather than the direct roadmap item",
+        "Recommends journey mapping or equivalent behavior mapping",
+        "Mentions boosters and blockers or success/failure behaviors"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We think faster feedback will improve exercise completion, but we are not sure. How should that appear on the roadmap?",
+      "expected_output": "A response that presents the idea as a testable hypothesis with a measurement plan rather than a fixed delivery commitment.",
+      "files": [],
+      "expectations": [
+        "Presents the idea as a hypothesis",
+        "Includes how success will be measured"
+      ]
+    }
+  ]
+}

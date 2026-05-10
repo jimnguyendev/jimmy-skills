@@ -1,0 +1,26 @@
+[
+  {
+    "query": "I am leading a small data initiative. How should I phase the roadmap and avoid overbuilding?",
+    "should_trigger": true
+  },
+  {
+    "query": "What are the biggest failure modes when rolling out dashboards to business teams?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I assess whether we are at stage 1 or stage 2 in data maturity?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should we use a stateful merger for backfills?",
+    "should_trigger": false
+  },
+  {
+    "query": "Compare lakehouse and RDW.",
+    "should_trigger": false
+  },
+  {
+    "query": "How should we aggregate session data in ClickHouse?",
+    "should_trigger": false
+  }
+]

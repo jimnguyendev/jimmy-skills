@@ -1,0 +1,36 @@
+{
+  "skill_name": "data-program-leadership",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I am the tech lead on a small team and leadership wants a full analytics platform in one quarter. How should I scope this so we can actually deliver value?",
+      "expected_output": "A staged plan that starts with a narrow, trustworthy slice and avoids over-designing the platform.",
+      "files": [],
+      "expectations": [
+        "Scopes a small first phase instead of a full platform build",
+        "Includes validation or trust-building steps",
+        "Frames the plan around business value and current maturity"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our first dashboard is almost ready, but the numbers do not exactly match the spreadsheet the business team has been using. Should we still launch?",
+      "expected_output": "A response that emphasizes validation and explanation before broad release rather than pushing an untrusted dashboard live.",
+      "files": [],
+      "expectations": [
+        "Treats trust and validation as critical",
+        "Does not recommend broad launch without reconciling or explaining discrepancies"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We keep copying source tables into analytics as-is because it is faster. Why is that risky?",
+      "expected_output": "A response that explains why analytics should be modeled for business questions rather than source CRUD structure.",
+      "files": [],
+      "expectations": [
+        "Explains the mismatch between source schemas and analytics needs",
+        "Frames modeling around business questions or consumer needs"
+      ]
+    }
+  ]
+}

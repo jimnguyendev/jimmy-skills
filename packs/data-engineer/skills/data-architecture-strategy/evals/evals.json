@@ -1,0 +1,35 @@
+{
+  "skill_name": "data-architecture-strategy",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We are a mid-size company with a few analysts, one product analytics backlog, and mostly structured data. Should we start with a lakehouse or a simple relational warehouse?",
+      "expected_output": "A stage-aware recommendation that prefers simpler centralized structured analytics first and explains why lakehouse is premature.",
+      "files": [],
+      "expectations": [
+        "Recommends a simpler centralized warehouse or RDW path first",
+        "Uses team maturity and current workload to justify the choice"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you explain the practical difference between a modern data warehouse and a lakehouse for BI and ML?",
+      "expected_output": "A comparison that distinguishes replicated RDW serving in MDW from one-repository lakehouse design.",
+      "files": [],
+      "expectations": [
+        "Explains that MDW still includes an RDW serving layer",
+        "Explains that lakehouse aims to unify on one storage system"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Leadership keeps mentioning data mesh, but we only have a small engineering team. How should I respond?",
+      "expected_output": "A response that frames data mesh as an organizational scaling model and explains why it is likely overkill for a small team.",
+      "files": [],
+      "expectations": [
+        "Treats data mesh as an organizational model, not just a tool choice",
+        "Explains why it is overkill for a small or mid-sized team"
+      ]
+    }
+  ]
+}

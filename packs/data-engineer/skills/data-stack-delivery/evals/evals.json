@@ -1,0 +1,41 @@
+{
+  "skill_name": "data-stack-delivery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want a local learning stack for data engineering. Can you show me a practical path that uses Airflow for orchestration, Snowflake for the warehouse, and dbt for transformations without making it heavier than needed?",
+      "expected_output": "A practical recommendation that separates local learning from production-like setup, suggests lightweight Airflow, explains Snowflake load basics, and uses dbt as the transformation and test layer.",
+      "files": [],
+      "expectations": [
+        "Distinguishes learning-stack guidance from production-like guidance",
+        "Recommends a lightweight or no-frills Airflow setup for local practice",
+        "Includes Snowflake warehouse or staged-load basics",
+        "Treats dbt as the default transformation and testing layer"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our team wants near-real-time dashboards, but the only concrete need today is a twice-daily operational report plus some heavy aggregations. Should we stay with Spark batch or introduce Kafka now?",
+      "expected_output": "A recommendation that starts with batch, explains the overhead of Kafka, and frames the decision around consumer latency, late-data policy, and operating complexity.",
+      "files": [],
+      "expectations": [
+        "Challenges the assumption that streaming is needed immediately",
+        "Uses consumer latency and operating cost as decision criteria",
+        "Explains a batch-first posture with Spark or equivalent",
+        "Mentions late-data or partitioning considerations if Kafka is discussed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I have an Airflow DAG that lands data, a dbt project that builds marts, and a quality team asking how to prove trust before publish. What should the end-to-end handoff and checks look like?",
+      "expected_output": "A response that explains stage handoffs across orchestration, warehouse or transform, and quality layers, and recommends explicit SQL or test-based verification before publish.",
+      "files": [],
+      "expectations": [
+        "Describes the handoff between orchestration, transformation, and quality",
+        "Recommends explicit post-load or post-build verification",
+        "Uses dbt tests or quality checks as a publish gate",
+        "Does not treat a green orchestrator run as sufficient proof of correctness"
+      ]
+    }
+  ]
+}

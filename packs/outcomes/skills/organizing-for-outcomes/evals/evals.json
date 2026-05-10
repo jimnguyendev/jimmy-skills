@@ -1,0 +1,36 @@
+{
+  "skill_name": "organizing-for-outcomes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our teams are split into iOS, Android, and web, but the outcome we care about spans the whole onboarding journey. What should we change?",
+      "expected_output": "A response that explains the structural mismatch and recommends organizing or coordinating around the customer outcome rather than only platform silos.",
+      "files": [],
+      "expectations": [
+        "Identifies the mismatch between channel structure and outcome",
+        "Recommends an outcome- or journey-centered way of working"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We have a backlog with years of requests and stakeholders no longer trust prioritization. How do we break the doom loop?",
+      "expected_output": "A response that treats the backlog as a trust problem and recommends outcome-focused intake or a backlog reset rather than pretending everything will get done.",
+      "files": [],
+      "expectations": [
+        "Treats the problem as trust and intake, not only tooling",
+        "Allows for backlog reset or radical reprioritization",
+        "Uses outcome-focused intake framing"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Stakeholders keep asking when we will be 'done' improving completion rate. How should I answer?",
+      "expected_output": "A response that defines hypotheses, success measures, and review windows instead of pretending there is a clean feature-complete finish line.",
+      "files": [],
+      "expectations": [
+        "Does not answer with a fake binary completion date",
+        "Uses review windows and success measures"
+      ]
+    }
+  ]
+}

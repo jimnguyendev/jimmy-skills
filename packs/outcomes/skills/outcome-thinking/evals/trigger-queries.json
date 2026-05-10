@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Help me explain the difference between output, outcome, and impact to my team.",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I turn a feature roadmap into behavior-based OKRs?",
+    "should_trigger": true
+  },
+  {
+    "query": "What leading indicators should I use instead of just watching revenue?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I turn this feature roadmap into an outcome-based plan?",
+    "should_trigger": false
+  },
+  {
+    "query": "How should we organize teams around customer outcomes instead of product silos?",
+    "should_trigger": false
+  },
+  {
+    "query": "How do I treat internal stakeholders like customers during an organizational change?",
+    "should_trigger": false
+  }
+]

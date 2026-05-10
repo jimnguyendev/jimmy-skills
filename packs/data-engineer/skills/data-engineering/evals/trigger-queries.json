@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Should we use dbt marts or just one giant reporting table for our ClickHouse dashboards?",
+    "should_trigger": true
+  },
+  {
+    "query": "We have three teams arguing over what counts as an active learner. How should we structure a semantic metrics layer?",
+    "should_trigger": true
+  },
+  {
+    "query": "How should we structure raw, intermediate, and mart layers for a shared analytics platform?",
+    "should_trigger": true
+  },
+  {
+    "query": "I need help deciding between batch ingestion and CDC for product analytics.",
+    "should_trigger": false
+  },
+  {
+    "query": "Should we use an RDW, MDW, or lakehouse for our analytics roadmap?",
+    "should_trigger": false
+  },
+  {
+    "query": "Our mart says it refreshed, but the dashboard is showing yesterday's data. What observability checks are missing?",
+    "should_trigger": false
+  }
+]

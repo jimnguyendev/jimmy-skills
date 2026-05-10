@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Should we use an RDW, MDW, or lakehouse for our analytics roadmap?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do schema-on-read and schema-on-write affect architecture choice?",
+    "should_trigger": true
+  },
+  {
+    "query": "Is data mesh realistic for a 30-engineer company?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I make this incremental pipeline safe to rerun after failures and backfills?",
+    "should_trigger": false
+  },
+  {
+    "query": "Should we use dbt marts or just one giant reporting table for our ClickHouse dashboards?",
+    "should_trigger": false
+  },
+  {
+    "query": "Our mart says it refreshed, but the dashboard is showing yesterday's data. What observability checks are missing?",
+    "should_trigger": false
+  }
+]

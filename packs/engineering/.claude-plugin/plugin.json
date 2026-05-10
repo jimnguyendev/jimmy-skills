@@ -1,0 +1,14 @@
+{
+  "name": "engineering",
+  "description": "Stack-agnostic engineering process — design thinking, API design, perf optimization (3 skills)",
+  "version": "1.3.0",
+  "author": {
+    "name": "Jim Nguyen",
+    "email": "jimnguyendev@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/jimnguyendev/jimmy-skills",
+  "repository": "https://github.com/jimnguyendev/jimmy-skills",
+  "license": "MIT",
+  "keywords": ["engineering", "design-thinking", "api-design", "performance", "skills"],
+  "skills": "./skills/"
+}

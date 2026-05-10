@@ -1,0 +1,26 @@
+[
+  {
+    "query": "How do I make this incremental pipeline safe to rerun after failures and backfills?",
+    "should_trigger": true
+  },
+  {
+    "query": "We keep getting duplicate rows after retrying a CDC job. What idempotency pattern should we use?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should this warehouse load use overwrite, merge, or transaction semantics?",
+    "should_trigger": true
+  },
+  {
+    "query": "How should we structure raw, intermediate, and mart layers for our analytics platform?",
+    "should_trigger": false
+  },
+  {
+    "query": "Should we use an RDW, MDW, or lakehouse for our analytics roadmap?",
+    "should_trigger": false
+  },
+  {
+    "query": "Help me design dbt tests so a mart only publishes when row counts and core metrics look sane.",
+    "should_trigger": false
+  }
+]

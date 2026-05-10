@@ -1,0 +1,36 @@
+{
+  "skill_name": "data-value-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We have raw learning events but dashboards need user country, course metadata, and completion summaries. Which transformation patterns should we use?",
+      "expected_output": "A response that combines enrichment and aggregation patterns rather than treating everything as one generic transform.",
+      "files": [],
+      "expectations": [
+        "Uses an enrichment pattern such as static joiner",
+        "Uses an aggregation pattern suited to the output fact or summary"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We want one table that keeps raw event fields for debugging but also exposes computed session metrics for analysts. How should we structure it?",
+      "expected_output": "A response that recommends a wrapper-style pattern or equivalent that keeps raw lineage while adding computed fields.",
+      "files": [],
+      "expectations": [
+        "Keeps raw lineage available",
+        "Adds computed fields without erasing the original record context"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "User sessions span multiple hourly partitions and we do not want to rebuild the entire history every run. What sessionization approach fits best?",
+      "expected_output": "A response that recommends incremental sessionization with pending and completed storage, and warns about replay dependence.",
+      "files": [],
+      "expectations": [
+        "Recommends incremental sessionizer for batch partitioned data",
+        "Mentions pending/completed or equivalent cross-partition state",
+        "Warns that replaying one partition may require replaying later ones"
+      ]
+    }
+  ]
+}

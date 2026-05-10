@@ -1,0 +1,36 @@
+{
+  "skill_name": "outcomes-driven-transformation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We want regional leaders to align on one strategy, but each leader still describes it differently. How should I approach this transformation?",
+      "expected_output": "A response that treats the leaders as internal customers, defines the desired behavior explicitly, and recommends a change experiment rather than only issuing a strategy deck.",
+      "files": [],
+      "expectations": [
+        "Treats internal leaders as customers or adoption targets",
+        "Defines success as a behavior change",
+        "Recommends an experiment or iterative intervention"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want our developers to stop writing tickets that only describe implementation and start proposing expected user impact. How should I drive that change?",
+      "expected_output": "A response that defines the new internal behavior explicitly and proposes a small intervention to test adoption.",
+      "files": [],
+      "expectations": [
+        "Defines the desired internal behavior clearly",
+        "Uses an experiment or pilot instead of only a mandate"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We have a new internal technology platform, but no one seems interested. What should we do first?",
+      "expected_output": "A response that recommends a small demand-discovery or adoption experiment instead of a large rollout plan.",
+      "files": [],
+      "expectations": [
+        "Treats adoption as uncertain",
+        "Recommends a small interest or adoption test"
+      ]
+    }
+  ]
+}

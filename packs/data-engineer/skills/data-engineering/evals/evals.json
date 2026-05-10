@@ -1,0 +1,39 @@
+{
+  "skill_name": "data-engineering",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We have PostgreSQL for our app and ClickHouse for analytics. Product wants daily dashboards for course completion, marketing wants cohort retention, and engineering wants one shared metrics definition. Propose a practical warehouse shape and where raw, intermediate, and mart layers should live.",
+      "expected_output": "A pragmatic architecture recommendation that separates OLTP from OLAP, uses raw/intermediate/mart layers, defines shared metrics once, and assigns team-facing marts by consumer need.",
+      "files": [],
+      "expectations": [
+        "Separates production OLTP storage from analytics workloads",
+        "Recommends a raw/intermediate/mart layering pattern or equivalent",
+        "Calls out the need for shared semantic metric definitions",
+        "Frames the design around consumer teams or decisions instead of only tools"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My PM keeps asking for real-time dashboards, but the only current use case is a morning leadership report and weekly feature reviews. Should we build CDC now or start with batch?",
+      "expected_output": "A recommendation to start with batch unless explicit low-latency requirements are present, with reasoning tied to user need and operational complexity.",
+      "files": [],
+      "expectations": [
+        "Challenges the assumption that real-time is necessary",
+        "Recommends batch as the default starting point for this use case",
+        "Explains the complexity trade-off of CDC or streaming"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We want one row in a fact table for learner progress, but the team is debating between one row per exam attempt, one row per user-day, and one row per enrollment. How should we decide?",
+      "expected_output": "A response that explains grain explicitly, compares the options, and prefers the lowest meaningful grain that preserves future flexibility.",
+      "files": [],
+      "expectations": [
+        "Explains that grain must be defined before table design",
+        "Compares the candidate grains in terms of downstream flexibility",
+        "Prefers the lowest meaningful grain rather than an arbitrary aggregate"
+      ]
+    }
+  ]
+}

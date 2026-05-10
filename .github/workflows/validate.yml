@@ -1,0 +1,77 @@
+name: Validate Marketplace
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packs/**"
+      - ".claude-plugin/**"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "packs/**"
+      - ".claude-plugin/**"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate JSON manifests
+        run: |
+          python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
+          find packs -path '*/.claude-plugin/plugin.json' -print | sort | while read -r file; do
+            python3 -m json.tool "$file" >/dev/null
+          done
+
+      - name: Validate marketplace structure
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path(".")
+          market = json.loads((root / ".claude-plugin/marketplace.json").read_text())
+
+          assert "name" in market, "marketplace missing name"
+          assert "owner" in market, "marketplace missing owner"
+          assert "plugins" in market, "marketplace missing plugins"
+
+          for plugin in market["plugins"]:
+              name = plugin["name"]
+              source = plugin["source"]
+              source_dir = root / source.lstrip("./")
+              assert source_dir.is_dir(), f"plugin {name}: source dir missing: {source_dir}"
+
+              pj_path = source_dir / ".claude-plugin" / "plugin.json"
+              assert pj_path.is_file(), f"plugin {name}: missing {pj_path}"
+
+              pj = json.loads(pj_path.read_text())
+              assert pj["name"] == name, f"plugin {name}: plugin.json name mismatch: {pj['name']}"
+
+              skills_rel = pj.get("skills", "./skills/")
+              skills_dir = source_dir / skills_rel.lstrip("./")
+              assert skills_dir.is_dir(), f"plugin {name}: skills dir missing: {skills_dir}"
+
+              count = 0
+              for skill in sorted(skills_dir.iterdir()):
+                  if skill.is_dir():
+                      skill_md = skill / "SKILL.md"
+                      assert skill_md.is_file(), f"plugin {name}: skill {skill.name}/ has no SKILL.md"
+                      count += 1
+              print(f"  {name}: {count} skills OK")
+          PY
+
+      - name: Validate skill frontmatter conventions
+        run: |
+          find packs -path '*/skills/*/SKILL.md' | sort | while read -r file; do
+            grep -q '^name:' "$file"
+            grep -q '^description:' "$file"
+            grep -q '^metadata:$' "$file"
+            grep -q '^  author: jimnguyendev$' "$file"
+            grep -q '^  version:' "$file"
+            grep -q '^allowed-tools:' "$file"
+          done

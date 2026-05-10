@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Our mart says it refreshed, but the dashboard is showing yesterday's data. What observability checks are missing?",
+    "should_trigger": true
+  },
+  {
+    "query": "How should we alert on data freshness and show last updated timestamps for critical datasets?",
+    "should_trigger": true
+  },
+  {
+    "query": "We think one Kafka partition is lagging badly even though the average looks fine. How should we monitor this?",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you add dbt tests for nulls and duplicate keys?",
+    "should_trigger": false
+  },
+  {
+    "query": "Design a star schema for learner activity analytics.",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a Python script to send Slack alerts.",
+    "should_trigger": false
+  }
+]
