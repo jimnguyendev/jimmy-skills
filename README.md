@@ -26,48 +26,72 @@ Skills are namespaced by plugin: `/backend:backend-go-performance`, `/engineerin
 
 ### Any AI agent (Gemini, Codex, Cursor, Copilot, Windsurf, Cline, …) via npx
 
-The `npx skills add` installer (powered by [vercel-labs/skills](https://github.com/vercel-labs/skills)) writes skill files into your agent's config directory. Pack selection is done via `--skill` globs — pick the pack you want and copy the line:
+The `npx skills add` installer (powered by [vercel-labs/skills](https://github.com/vercel-labs/skills)) writes skill files into your agent's config directory. Pack selection requires **exact skill names** — the installer does literal-name matching, not glob patterns. Copy the block for the pack you want:
 
 ```bash
-# Install ONE pack, scoped to ONE agent (replace --agent codex with your agent)
-
 # backend (31 skills)
-npx skills add jimnguyendev/jimmy-skills \
-  --skill 'backend-*' --skill 'kafka-patterns' --skill 'myvocap-backend' \
-  --agent codex
+npx skills add jimnguyendev/jimmy-skills --agent codex \
+  --skill backend-core \
+  --skill backend-go-benchmark --skill backend-go-cli --skill backend-go-code-style \
+  --skill backend-go-concurrency --skill backend-go-context --skill backend-go-continuous-integration \
+  --skill backend-go-data-structures --skill backend-go-database --skill backend-go-dependency-management \
+  --skill backend-go-design-patterns --skill backend-go-documentation --skill backend-go-error-handling \
+  --skill backend-go-grpc --skill backend-go-linter --skill backend-go-modernize \
+  --skill backend-go-naming --skill backend-go-observability --skill backend-go-performance \
+  --skill backend-go-popular-libraries --skill backend-go-project-layout --skill backend-go-safety \
+  --skill backend-go-samber-hot --skill backend-go-security --skill backend-go-stay-updated \
+  --skill backend-go-stretchr-testify --skill backend-go-structs-interfaces --skill backend-go-testing \
+  --skill backend-go-troubleshooting \
+  --skill kafka-patterns --skill myvocap-backend
 
 # engineering (3 skills)
-npx skills add jimnguyendev/jimmy-skills --skill 'engineering-*' --agent codex
+npx skills add jimnguyendev/jimmy-skills --agent codex \
+  --skill engineering-design-thinking \
+  --skill engineering-rest-api-design \
+  --skill engineering-perf-optimization-process
 
 # data-engineer (8 skills)
-npx skills add jimnguyendev/jimmy-skills --skill 'data-*' --agent codex
+npx skills add jimnguyendev/jimmy-skills --agent codex \
+  --skill data-engineering --skill data-stack-delivery --skill data-architecture-strategy \
+  --skill data-pipeline-reliability --skill data-quality --skill data-observability \
+  --skill data-program-leadership --skill data-value-patterns
 
 # outcomes (4 skills)
-npx skills add jimnguyendev/jimmy-skills \
-  --skill 'outcome*' --skill 'organizing-for-outcomes' \
-  --agent codex
+npx skills add jimnguyendev/jimmy-skills --agent codex \
+  --skill outcome-thinking --skill outcomes-based-planning \
+  --skill organizing-for-outcomes --skill outcomes-driven-transformation
 
 # prompt-engineering (26 skills)
-npx skills add jimnguyendev/jimmy-skills --skill 'prompt-engineering-*' --agent codex
+npx skills add jimnguyendev/jimmy-skills --agent codex \
+  --skill prompt-engineering-core --skill prompt-engineering-system-prompt \
+  --skill prompt-engineering-role --skill prompt-engineering-pitfalls \
+  --skill prompt-engineering-few-shot --skill prompt-engineering-reasoning \
+  --skill prompt-engineering-refine --skill prompt-engineering-edge-cases \
+  --skill prompt-engineering-output-structured --skill prompt-engineering-output-json \
+  --skill prompt-engineering-output-xml --skill prompt-engineering-output-yaml \
+  --skill prompt-engineering-chain --skill prompt-engineering-context \
+  --skill prompt-engineering-cost --skill prompt-engineering-eval \
+  --skill prompt-engineering-agent --skill prompt-engineering-multimodal \
+  --skill prompt-engineering-domain-coding --skill prompt-engineering-domain-writing \
+  --skill prompt-engineering-domain-education --skill prompt-engineering-domain-business \
+  --skill prompt-engineering-domain-creative --skill prompt-engineering-domain-research \
+  --skill prompt-engineering-domain-support --skill prompt-engineering-domain-devops
 ```
 
-Combine packs by stacking `--skill` flags in one command. Combine agents by stacking `--agent` (or `-a`):
+Combine packs by stacking `--skill` flags from multiple blocks. Combine agents by stacking `--agent` (or `-a`):
 
 ```bash
-# Two packs to one agent
+# One pack to multiple agents — stack -a flags
 npx skills add jimnguyendev/jimmy-skills \
-  --skill 'engineering-*' --skill 'prompt-engineering-*' \
-  --agent codex
-
-# One pack to multiple agents
-npx skills add jimnguyendev/jimmy-skills \
-  --skill 'prompt-engineering-*' \
-  -a claude-code -a codex -a cursor
+  -a claude-code -a codex -a cursor \
+  --skill engineering-design-thinking \
+  --skill engineering-rest-api-design \
+  --skill engineering-perf-optimization-process
 
 # Interactive skill picker, scoped to one agent
 npx skills add jimnguyendev/jimmy-skills --agent codex
 
-# Install everything to one agent
+# Install ALL 72 skills to one agent
 npx skills add jimnguyendev/jimmy-skills --skill '*' --agent codex
 
 # List available skills without installing
