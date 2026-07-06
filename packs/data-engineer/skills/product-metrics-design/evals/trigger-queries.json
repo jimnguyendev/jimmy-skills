@@ -1,0 +1,30 @@
+[
+  {
+    "query": "What should the North Star metric be for our learning app, and how do I defend it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Define success metrics and guardrails for the new review feature before we build it.",
+    "should_trigger": true
+  },
+  {
+    "query": "Is daily active users a vanity metric for an exam-prep product?",
+    "should_trigger": true
+  },
+  {
+    "query": "Leadership wants one KPI per squad — help me pick leading vs lagging indicators.",
+    "should_trigger": true
+  },
+  {
+    "query": "Compute the retention curve and churn states from our events table.",
+    "should_trigger": false
+  },
+  {
+    "query": "How big a sample do I need for this A/B test?",
+    "should_trigger": false
+  },
+  {
+    "query": "Design the dbt mart layering for our warehouse.",
+    "should_trigger": false
+  }
+]

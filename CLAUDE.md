@@ -70,6 +70,7 @@ Required frontmatter:
 - Use `backend-go-*` for Go implementation details.
 - Use `engineering-design-thinking` before starting large features.
 - Use `data-engineering` for warehouse/platform design and `outcome-thinking` for outcome-centered planning work.
+- Use `product-metrics-design` → `retention-engagement-analysis` → `experimentation-analytics` as the product-analytics chain: choose metrics, understand behavior, then prove causality. `outcome-thinking` hands leading-indicator validation to this chain.
 
 ## Marketplace Architecture
 

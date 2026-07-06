@@ -1,0 +1,48 @@
+{
+  "skill_name": "experimentation-analytics",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "PM wants to A/B test a completely new review experience next sprint: new layout, new recommendations, new prompts, all at once, judged on conversion after two weeks. Advise.",
+      "expected_output": "A response that reframes this as a foundation release: staged rollout with a guardrails-only backlash check first, stabilization, then separate experiments per change with one primary metric each.",
+      "files": [],
+      "expectations": [
+        "Distinguishes foundation releases from optimization experiments",
+        "First stage reads guardrails only, not a win metric",
+        "Rejects judging multiple simultaneous changes with one two-week conversion test"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Day 5 of a planned 21-day test, p=0.04 in favor of the variant. The team wants to ship now. What do you say?",
+      "expected_output": "A response that explains peeking inflates false positives, insists on the pre-committed sample/duration, and offers sequential testing as the legitimate path to early stopping.",
+      "files": [],
+      "expectations": [
+        "Refuses early stopping based on an interim p-value",
+        "Explains inflated false-positive risk from peeking",
+        "Mentions sequential testing as the valid alternative"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We ran out of users to test on, so we plan to reuse the control group from a running experiment for a second one. Thoughts?",
+      "expected_output": "A response that treats capacity as a hard constraint, warns against manual control-group sharing (invalid isolation, high bug risk), and points to platform namespaces or waiting for a free slot.",
+      "files": [],
+      "expectations": [
+        "Rejects manually shared control groups",
+        "Frames experiment capacity as a physical constraint to plan around",
+        "Recommends platform-native mutual exclusivity (namespaces) or sequencing tests"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Our experiment on per-question hint styles counts every user assigned at page load, but most never open a hint. Results look flat. Diagnose.",
+      "expected_output": "A response that identifies assignment-vs-exposure dilution and moves exposure logging to the render point of the hint.",
+      "files": [],
+      "expectations": [
+        "Identifies that assigned-but-never-exposed users dilute the measured effect",
+        "Recommends firing exposure at the component/render point for item-level experiments"
+      ]
+    }
+  ]
+}

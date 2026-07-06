@@ -1,0 +1,39 @@
+{
+  "skill_name": "product-metrics-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We are launching an AI essay-review feature in our test-prep app. Define the metric set we should track to know if it works.",
+      "expected_output": "A layered metric set: one leading North Star behavior, a lagging impact metric read via holdout, one primary per initiative, and explicit guardrails/counter-metrics.",
+      "files": [],
+      "expectations": [
+        "Distinguishes leading (behavioral, short window) from lagging (impact, quarterly) metrics",
+        "Defines exactly one primary metric for the initiative",
+        "Includes at least one counter-metric or guardrail chosen before launch",
+        "States the denominator for the key metrics"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our conversion to paid jumped 15% after we hardened the paywall. Ship it everywhere?",
+      "expected_output": "A response that checks quality of conversion before celebrating, especially first-conversion churn/refunds, and warns about short-term optimization damaging long-term trust.",
+      "files": [],
+      "expectations": [
+        "Asks for first-conversion churn or refund rate as a counter-metric",
+        "Warns that a confused and a converted user can look identical short-term",
+        "Does not recommend shipping on the primary metric alone"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The CEO wants DAU as our main KPI. We are an exam-prep product where students leave after passing. What do I say?",
+      "expected_output": "A response that explains why DAU misfits deadline-driven usage, proposes cycle-appropriate metrics, and reframes post-exam churn as graduation.",
+      "files": [],
+      "expectations": [
+        "Explains the mismatch between DAU and deadline-driven product cycles",
+        "Proposes weekly-cadence behavioral metrics instead",
+        "Treats churn after goal achievement as graduation, suggesting cohorting by exam date"
+      ]
+    }
+  ]
+}

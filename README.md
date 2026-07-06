@@ -15,7 +15,7 @@ Add the marketplace once, then install each pack you need:
 # Step 2: install one or more packs
 /plugin install backend@jimmy-skills              # architecture + Go (31 skills)
 /plugin install engineering@jimmy-skills          # design thinking + API + perf (3 skills)
-/plugin install data-engineer@jimmy-skills        # data platform + quality + leadership (8 skills)
+/plugin install data-engineer@jimmy-skills        # data platform + quality + product analytics + leadership (11 skills)
 /plugin install outcomes@jimmy-skills             # outcomes + planning + transformation (4 skills)
 /plugin install prompt-engineering@jimmy-skills   # prompt design + outputs + agents + domains (26 skills)
 ```
@@ -50,9 +50,10 @@ npx skills add jimnguyendev/jimmy-skills --agent codex \
   --skill engineering-rest-api-design \
   --skill engineering-perf-optimization-process
 
-# data-engineer (8 skills)
+# data-engineer (11 skills)
 npx skills add jimnguyendev/jimmy-skills --agent codex \
   --skill data-engineering --skill data-stack-delivery --skill data-architecture-strategy \
+  --skill product-metrics-design --skill retention-engagement-analysis --skill experimentation-analytics \
   --skill data-pipeline-reliability --skill data-quality --skill data-observability \
   --skill data-program-leadership --skill data-value-patterns
 
@@ -218,7 +219,7 @@ Nothing goes in just because the AI sounded confident.
 |--------|--------|-------------|
 | `backend` | 31 | Backend architecture + Go implementation |
 | `engineering` | 3 | Design thinking, API design, perf optimization |
-| `data-engineer` | 8 | Data platform, tooling, quality, observability, leadership |
+| `data-engineer` | 11 | Data platform, tooling, quality, observability, product analytics, leadership |
 | `outcomes` | 4 | Outcome thinking, planning, operating model, transformation |
 | `prompt-engineering` | 26 | Prompt frame, role/system design, structured outputs, reasoning, chains, context, cost, eval, agents, multimodal, 8 domain templates |
 
@@ -263,7 +264,7 @@ engineering (3 skills)
 ├── engineering-rest-api-design            API contracts, versioning
 └── engineering-perf-optimization-process  Perf gates, escalation ladder
 
-data-engineer (8 skills)
+data-engineer (11 skills)
 ├── data-engineering                       Warehouse, marts, semantic metrics
 ├── data-stack-delivery                    Airflow, Snowflake, dbt, Spark, Kafka
 ├── data-architecture-strategy             RDW vs lakehouse vs mesh
@@ -271,7 +272,10 @@ data-engineer (8 skills)
 ├── data-quality                           Contracts, reconciliation, publish gates
 ├── data-observability                     Freshness, lag, stale dashboards
 ├── data-program-leadership                Roadmaps, ownership, stakeholder alignment
-└── data-value-patterns                    Enrichment, aggregation, value framing
+├── data-value-patterns                    Enrichment, aggregation, value framing
+├── product-metrics-design                 North Star, guardrails, anti-vanity
+├── retention-engagement-analysis          Cohorts, state machines, aha moments
+└── experimentation-analytics              A/B design, power, exposure, capacity
 
 outcomes (4 skills)
 ├── outcome-thinking                       Outcomes vs outputs vs impact
@@ -319,6 +323,9 @@ prompt-engineering (26 skills)
 "Review this concurrent code"              → backend-go-concurrency (auto-routed)
 "How should we structure our data stack?"  → /data-engineer:data-engineering
 "How do Airflow, Snowflake, dbt, and Kafka fit together?" → /data-engineer:data-stack-delivery
+"What should our North Star and guardrail metrics be?" → /data-engineer:product-metrics-design
+"Why do users churn and what is our aha moment?" → /data-engineer:retention-engagement-analysis
+"Design this A/B test properly"             → /data-engineer:experimentation-analytics
 "Our dashboards are stale"                 → data-observability (auto-routed)
 "Turn this roadmap into outcomes"          → /outcomes:outcome-thinking
 "How should I structure this prompt?"      → /prompt-engineering:prompt-engineering-core

@@ -1,0 +1,30 @@
+[
+  {
+    "query": "Design an A/B test for our new paywall placement, including sample size.",
+    "should_trigger": true
+  },
+  {
+    "query": "The experiment has been running 5 days and variant B is already winning — can we ship?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should we use a bandit or a normal A/B test to pick notification copy?",
+    "should_trigger": true
+  },
+  {
+    "query": "Our traffic split shows 57/43 instead of 50/50. What does that mean?",
+    "should_trigger": true
+  },
+  {
+    "query": "What metrics should our product dashboard show?",
+    "should_trigger": false
+  },
+  {
+    "query": "Compute cohort retention and find our aha moment from the events table.",
+    "should_trigger": false
+  },
+  {
+    "query": "Set up dbt tests and publish gates for the marts.",
+    "should_trigger": false
+  }
+]

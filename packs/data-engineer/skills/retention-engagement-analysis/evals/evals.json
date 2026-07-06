@@ -1,0 +1,38 @@
+{
+  "skill_name": "retention-engagement-analysis",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We think our aha moment is 'user completes profile'. Marketing wants to push everyone there. Validate or refute the approach.",
+      "expected_output": "A response that refuses to accept an unvalidated aha moment and lays out behavioral-cohort correlation: compare later retention of users with vs without the candidate behavior, test alternative combos, then confirm causally with an experiment.",
+      "files": [],
+      "expectations": [
+        "States that an aha moment must be validated by correlation with retention, not declared",
+        "Describes comparing retention of users with vs without the behavior combo",
+        "Notes that correlation still needs an experiment for causal confirmation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Leadership celebrates that our winback email reactivated 800 dormant users last month. What should we check?",
+      "expected_output": "A response centered on reactivation quality: what share of those REACTIVE users churned again the following period, and framing failed winback as a strong churn signal.",
+      "files": [],
+      "expectations": [
+        "Checks next-period retention of reactivated users, not just the reactivation count",
+        "Flags that REACTIVE users who go silent immediately are effectively lost",
+        "Suggests targeting the transition arrow rather than the raw count"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Two features both average 4 active days per month per user. Are they equally sticky?",
+      "expected_output": "A response that rejects the average as sufficient: compare distributions and the spread of activity (entropy or equivalent) — evenly spread days indicate habit, concentrated bursts indicate churn risk.",
+      "files": [],
+      "expectations": [
+        "Points out that identical averages can hide opposite patterns",
+        "Uses distribution and/or entropy of activity spread to separate habit from binge",
+        "Prefers days-based over times-based measures as the habit signal"
+      ]
+    }
+  ]
+}

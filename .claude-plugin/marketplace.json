@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill kit that teaches AI agents how experienced engineers build software",
-    "version": "1.5.0"
+    "version": "1.6.0"
   },
   "plugins": [
     {
@@ -19,7 +19,12 @@
       },
       "homepage": "https://github.com/jimnguyendev/jimmy-skills",
       "license": "MIT",
-      "keywords": ["backend", "go", "golang", "architecture"],
+      "keywords": [
+        "backend",
+        "go",
+        "golang",
+        "architecture"
+      ],
       "category": "development"
     },
     {
@@ -32,33 +37,53 @@
       },
       "homepage": "https://github.com/jimnguyendev/jimmy-skills",
       "license": "MIT",
-      "keywords": ["engineering", "design-thinking", "api-design", "performance"],
+      "keywords": [
+        "engineering",
+        "design-thinking",
+        "api-design",
+        "performance"
+      ],
       "category": "development"
     },
     {
       "name": "data-engineer",
       "source": "./packs/data-engineer",
-      "description": "Data platform, stack delivery, quality, observability, and data program leadership skills (8 skills)",
-      "version": "1.1.0",
+      "description": "Data platform, quality, observability, product analytics (metrics, retention, experimentation), and data program leadership (11 skills)",
+      "version": "1.2.0",
       "author": {
         "name": "Jim Nguyen"
       },
       "homepage": "https://github.com/jimnguyendev/jimmy-skills",
       "license": "MIT",
-      "keywords": ["data", "analytics", "warehouse", "quality", "observability"],
+      "keywords": [
+        "analytics",
+        "data",
+        "experimentation",
+        "metrics",
+        "observability",
+        "quality",
+        "retention",
+        "warehouse"
+      ],
       "category": "development"
     },
     {
       "name": "outcomes",
       "source": "./packs/outcomes",
       "description": "Outcome thinking, planning, operating model, and transformation skills (4 skills)",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Jim Nguyen"
       },
       "homepage": "https://github.com/jimnguyendev/jimmy-skills",
       "license": "MIT",
-      "keywords": ["outcomes", "okr", "planning", "operating-model", "transformation"],
+      "keywords": [
+        "outcomes",
+        "okr",
+        "planning",
+        "operating-model",
+        "transformation"
+      ],
       "category": "development"
     },
     {
@@ -71,7 +96,13 @@
       },
       "homepage": "https://github.com/jimnguyendev/jimmy-skills",
       "license": "MIT",
-      "keywords": ["prompt-engineering", "llm", "structured-output", "agents", "claude"],
+      "keywords": [
+        "prompt-engineering",
+        "llm",
+        "structured-output",
+        "agents",
+        "claude"
+      ],
       "category": "development"
     }
   ]

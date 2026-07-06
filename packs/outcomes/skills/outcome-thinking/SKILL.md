@@ -46,11 +46,22 @@ Use this skill when the core problem is that a team is managing work by features
 - Leading indicators should help the team decide what to do next, not just report historical performance.
 - MVP language belongs downstream in planning or transformation work; this skill's job is to define the behavior and measure, not the rollout plan.
 
+## Validating a leading indicator
+
+A leading indicator is a hypothesis until evidence says otherwise. Grade it on an evidence ladder, cheapest first:
+
+1. **Cohort correlation** — do users who exhibit the behavior show meaningfully better lagging results (retention, conversion, goal achievement) than users who do not? No separation means the indicator is a superstition.
+2. **Relative-time impact chart** — align users at the first time they performed the behavior and compare the lagging metric before vs after. Stronger evidence, still observational (self-selection applies).
+3. **Randomized experiment** — the only causal proof. Hand off to `jimmy-skills@experimentation-analytics`.
+
+Pair every outcome metric with a **counter-metric**: the behavior you push can be gamed, and the counter-metric catches the damage (pushing "reflections completed" while skip or rushed-completion rates climb means the team is nagging users, not helping them). An outcome without a counter-metric is not ready for an OKR. For structuring the metric set itself, use `jimmy-skills@product-metrics-design`.
+
 ## Gotchas
 
 - Teams often relabel current feature work as OKRs without changing how decisions are made.
 - A completed feature can be correct by spec and still create no value.
 - Outcome language without measurement is still vague planning.
+- An unvalidated leading indicator quietly becomes a vanity metric with better branding.
 - Impact targets that are far outside team control create confusion rather than accountability.
 
 ## References

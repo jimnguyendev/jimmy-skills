@@ -1,0 +1,30 @@
+[
+  {
+    "query": "Why do users stop coming back after their second week? Walk me through the analysis.",
+    "should_trigger": true
+  },
+  {
+    "query": "Help me define and validate the aha moment for our app.",
+    "should_trigger": true
+  },
+  {
+    "query": "Which features are actually habits vs one-time binges? We have event data in ClickHouse.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our winback campaign reactivated 500 users — how do I know if it really worked?",
+    "should_trigger": true
+  },
+  {
+    "query": "What KPIs should the exec dashboard show?",
+    "should_trigger": false
+  },
+  {
+    "query": "Design an A/B test for the new onboarding flow with sample size.",
+    "should_trigger": false
+  },
+  {
+    "query": "Make this ingestion pipeline idempotent for backfills.",
+    "should_trigger": false
+  }
+]
